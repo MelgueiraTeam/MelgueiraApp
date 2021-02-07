@@ -1,3 +1,3 @@
-# melgueira_app
+# MelgueiraApp
 
 A new App.
