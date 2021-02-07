@@ -1,2 +1,3 @@
-# MelgueiraApp
-A Simple App for Bees.
+# melgueira_app
+
+A new App.
