@@ -40,7 +40,7 @@ class MeliponarioHelper {
         "CREATE TABLE $meliponarioTable($idColumn INTEGER PRIMARY KEY,"
             "$nomeColumn TEXT,"
             "$descricaoColumn TEXT,"
-            "$dataColumn DATA, "
+            "$dataColumn DATE, "
             "$imageColumn TEXT)"
       );
 

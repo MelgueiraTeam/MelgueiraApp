@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:prototipo_01/ui/home%20_page.dart';
+import 'package:prototipo_01/ui/homePage.dart';
+import 'package:prototipo_01/ui/meliponariosPage.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: HomePage(),
+    home: HomePapge(),
     debugShowCheckedModeBanner: false,
   ));
 }

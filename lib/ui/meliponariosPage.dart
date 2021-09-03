@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  MeliponarioHelper helper = MeliponarioHelper();
+  /*MeliponarioHelper helper = MeliponarioHelper();
   List<Meliponario> meliponarios = List();
 
 
@@ -27,10 +27,23 @@ class _HomePageState extends State<HomePage> {
     _getAllMeliponarios();
 
   }
-
+*/
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Stack(
+      children: [
+        CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              floating: true,
+              snap: true,
+              backgroundColor: Colors.red,
+
+            )
+          ],
+        )
+      ],
+    );/*Scaffold(
       appBar: AppBar(
         title: Text("Meliponários"),
         backgroundColor: Colors.deepOrange,
@@ -48,16 +61,16 @@ class _HomePageState extends State<HomePage> {
                 value: OrderOptions.orderdc,
               ),
             ],
-            onSelected: _ordenarLista,
+            /*onSelected: _ordenarLista,*/
           ),
         ],
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: _showCadastroPage,
+        onPressed: (){}/*_showCadastroPage*/,
         child: Icon(Icons.add),
         backgroundColor: Colors.deepOrange,
-      ),
+      ),/*
       body: ListView.builder(
         padding: EdgeInsets.all(10.0),
         itemCount: meliponarios.length,
@@ -65,10 +78,10 @@ class _HomePageState extends State<HomePage> {
           return _createCard(context, index);
         },
 
-      ),
-    );
+      ),*/
+    );*/
   }
-
+/*
   Widget _createCard(BuildContext context, int index) {
     return GestureDetector(
       onTap: _showCaixasPage,
@@ -185,5 +198,5 @@ class _HomePageState extends State<HomePage> {
 
     });
   }
-
+*/
 }
