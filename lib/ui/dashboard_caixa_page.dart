@@ -9,7 +9,7 @@ class DashboardCaixasPage extends StatefulWidget {
 class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
 
   List<charts.Series<Task, String>> _seriesPieData;
-  List<charts.Series> _seriesList;
+                              List<charts.Series> _seriesList;
   List<charts.Series> _temperaturaUmidade;
 
 

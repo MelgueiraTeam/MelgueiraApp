@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
-import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker/image_picker.dart';
 
 class CadastroMeliponarioPage extends StatefulWidget {
 
@@ -86,7 +86,7 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
                           AssetImage("images/person.png"))),
                 ) ,
               ),
-              onTap: (){
+              onTap: (){/*
                 var picker = ImagePicker();
                 picker.getImage(source: ImageSource.camera).then((file){
                   if(file == null)return;
@@ -94,7 +94,7 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
                     _editedMeliponario.image = file.path;
                   });
                 });
-              },//é preciso ter um bd para trocar a imagem
+              */},//é preciso ter um bd para trocar a imagem
             ),
             TextField(
               controller: _nomeController,
