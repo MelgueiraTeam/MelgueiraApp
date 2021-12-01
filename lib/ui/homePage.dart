@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prototipo_01/ui/meliponariosPage.dart';
 import 'package:prototipo_01/widgets/custom_drawer.dart';
 
-class HomePapge extends StatelessWidget {
+class HomePage extends StatelessWidget {
 
   final _pageController = PageController();
 
@@ -14,7 +14,7 @@ class HomePapge extends StatelessWidget {
       children: [
         Scaffold(
           drawer: CustomDrawer(),
-          body: HomePage(),
+          body: TelaMeliponarios(),
         )
       ],
     );

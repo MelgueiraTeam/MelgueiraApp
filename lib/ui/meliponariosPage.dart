@@ -9,12 +9,12 @@ import 'package:prototipo_01/ui/dashboard_meliponario_page.dart';
 
 enum OrderOptions {orderaz, orderdc}
 
-class HomePage extends StatefulWidget {
+class TelaMeliponarios extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  TelaMeliponariosState createState() => TelaMeliponariosState();
 }
 
-class _HomePageState extends State<HomePage> {
+class TelaMeliponariosState extends State<TelaMeliponarios> {
 
   MeliponarioHelper helper = MeliponarioHelper();
   List<Meliponario> meliponarios = List();
@@ -48,13 +48,13 @@ class _HomePageState extends State<HomePage> {
                 value: OrderOptions.orderdc,
               ),
             ],
-            /*onSelected: _ordenarLista,*/
+            onSelected: _ordenarLista,
           ),
         ],
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: (){}/*_showCadastroPage*/,
+        onPressed: _showCadastroPage,
         child: Icon(Icons.add),
         backgroundColor: Colors.deepOrange,
       ),
