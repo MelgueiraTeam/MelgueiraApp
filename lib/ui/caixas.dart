@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prototipo_01/helpers/meliponario_helper.dart';
 import 'package:prototipo_01/ui/cadastroCaixaPage.dart';
 import 'package:prototipo_01/ui/dashboard_caixa_page.dart';
 import 'package:prototipo_01/ui/detalhesCaixaPage.dart';
@@ -11,6 +12,16 @@ class CaixasPage extends StatefulWidget {
 }
 
 class _CaixasPageState extends State<CaixasPage> {
+
+  MeliponarioHelper helper = MeliponarioHelper();
+  List<Caixa> caixas = List();
+
+  @override
+  void initState() {
+    _getAllCaixas();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,18 +54,18 @@ class _CaixasPageState extends State<CaixasPage> {
         child: Icon(Icons.add),
         backgroundColor: Colors.deepOrange,
       ),
-      body: ListView(
-        children: [
-          Expanded(
-            child: _createCard("Caixa 01", "data", "30°"),
-          ),
-          _createCard("Caixa 02", "data", "27°")
-        ],
+      body: ListView.builder(
+        padding: EdgeInsets.all(10.0),
+        itemCount: caixas.length,
+        itemBuilder: (context, index){
+          return _createCard(context, index);
+        },
+
       ),
     );
   }
 
-  Widget _createCard(String nome, String data, String temperatura) {
+  Widget _createCard(BuildContext context, int index) {
     return GestureDetector(
       onTap: _showDetalhesCaixaPage,
       child: Card(
@@ -76,16 +87,16 @@ class _CaixasPageState extends State<CaixasPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        nome,
+                        caixas[index].nome?? "",
                         style: TextStyle(
                             fontSize: 20.0, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        "Criado em: $data",
+                        "Criado em: " + caixas[index].data?? "",
                         style: TextStyle(fontSize: 16.0),
                       ),
                       Text(
-                        "Temperatura: $temperatura",
+                        "Temperatura: 0°" ,//é preciso se comunicar com o pfc do bruno pra ter essa informação
                         style: TextStyle(fontSize: 16.0),
                       ),
                     ],
@@ -112,6 +123,11 @@ class _CaixasPageState extends State<CaixasPage> {
     );
   }
 
+  void _showDetalhesCaixaPage(){
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage()));
+  }
+  
   void _showCadastroPage() {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => CadastroCaixaPage()));
@@ -122,8 +138,27 @@ class _CaixasPageState extends State<CaixasPage> {
         MaterialPageRoute(builder: (context) => DashboardCaixasPage()));
   }
 
-  void _showDetalhesCaixaPage() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage()));
+  void _showCadastroCaixaPage({Caixa caixa}) async{
+    final recCaixa = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => CadastroCaixaPage(caixa: caixa, helper: helper,))
+    );
+
+    if(recCaixa != null){
+      if(recCaixa != null){
+        await helper.updateMeliponario(recCaixa);
+      }else{
+        await helper.saveMeliponario(recCaixa);
+      }
+      _getAllCaixas();
+    }
+  }
+
+  void _getAllCaixas(){
+    helper.getAllCaixas().then((list){
+      setState(() {
+        caixas = list;
+
+      });
+    });
   }
 }

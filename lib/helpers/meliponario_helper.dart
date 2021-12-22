@@ -73,6 +73,12 @@ class MeliponarioHelper {
     return meliponario;
   }
 
+  Future<Caixa>saveCaixa(Caixa caixa) async{//faz o insert de uma caixa no db
+    Database dbMeliponario = await db;
+    caixa.id = await dbMeliponario.insert(caixaTable, caixa.toMap());
+    return caixa;
+  }
+
   Future<Meliponario>getMeliponario(int id) async{//faz uma query por meio do id
     Database dbMeliponario = await db;
     List<Map> maps = await dbMeliponario.query(meliponarioTable,
@@ -114,6 +120,16 @@ class MeliponarioHelper {
       listaMeliponarios.add(Meliponario.fromMap(m));
     }
     return listaMeliponarios;
+  }
+
+  Future<List> getAllCaixas() async{//retorna uma lista de Meliiponarios
+    Database dbMeliponario = await db;
+    List listaCaixasMap = await dbMeliponario.rawQuery("SELECT * FROM $caixaTable");
+    List<Caixa> listaCaixas = List();
+    for(Map m in listaCaixasMap){
+      listaCaixas.add(Caixa.fromMap(m));
+    }
+    return listaCaixas;
   }
 
   Future<int> getNumberMeliponario() async{//ao fim da implementação dessa classe tornar essa função utilizavel para toda as tabelas || passar o parametro table

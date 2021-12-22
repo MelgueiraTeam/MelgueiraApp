@@ -151,7 +151,9 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
                   child: Text("Excluir",
                     style: TextStyle(color: Colors.white, fontSize: 25.0),
                   ),
-                  color: Colors.red,
+                  color: !_excluir?
+                  Colors.red :
+                  Colors.black,
                 ),
               ),
             ),

@@ -25,7 +25,6 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
     super.initState();
 
     _getAllMeliponarios();
-    print(meliponarios.length);
   }
 
   @override
