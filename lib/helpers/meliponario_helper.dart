@@ -41,9 +41,18 @@ class MeliponarioHelper {
             "$nomeColumn TEXT,"
             "$descricaoColumn TEXT,"
             "$dataColumn DATE, "
-            "$imageColumn TEXT)"
+            "$imageColumn TEXT);"
+            //cria a tabela das caixas
+            "CREATE TABLE $caixaTable($idColumn INTEGER PRIMARY KEY,"
+            "$nomeColumn TEXT,"
+            "$descricaoColumn TEXT,"
+            "$dataColumn DATA, "
+            "$imageColumn TEXT),"
+            "$idMeliponarioColunm INTEGER FOREGEIN KEY,"
+            "$valorMaximoTemperaturaColunm INTEGER,"
+            "$valorMinimoTemperaturaColunm INTEGER"
       );
-
+/*
       await db.execute(///cria a tabela das caixas
           "CREATE TABLE $caixaTable($idColumn INTEGER PRIMARY KEY,"
               "$nomeColumn TEXT,"
@@ -53,7 +62,7 @@ class MeliponarioHelper {
               "$idMeliponarioColunm INTEGER FOREGEIN KEY,"
               "$valorMaximoTemperaturaColunm INTEGER,"
               "$valorMinimoTemperaturaColunm INTEGER"
-      );
+      );*/
     });
 
   }
