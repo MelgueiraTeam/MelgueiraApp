@@ -29,10 +29,10 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar( 
-        title: Text("Meliponários"),
-        backgroundColor: Colors.deepOrange,
+    return DefaultTabController(length: 2, child: Scaffold(
+      appBar: AppBar(
+        title: Text("MelgueirApp"),
+        backgroundColor: Color.fromARGB(255, 255, 166, 78),
         centerTitle: true,
         actions: [
           PopupMenuButton<OrderOptions>(//copiei descaradamente pq n sabia direito o que tava fazendo kk
@@ -50,22 +50,44 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
             onSelected: _ordenarLista,
           ),
         ],
+        bottom: TabBar(
+          tabs: [
+            Tab(
+              text: "Apiários",
+            ),
+            Tab(
+              text: "Meliponários",
+            )
+          ],
+        ),
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: _showCadastroPage,
         child: Icon(Icons.add),
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Color.fromARGB(255, 255, 166, 78),
       ),
-      body: ListView.builder(
-        padding: EdgeInsets.all(10.0),
-        itemCount: meliponarios.length,
-        itemBuilder: (context, index){
-          return _createCard(context, index);
-        },
+      body: TabBarView(
+        children: [
+          ListView.builder(
+            padding: EdgeInsets.all(10.0),
+            itemCount: meliponarios.length,
+            itemBuilder: (context, index){
+              return _createCard(context, index);
+            },
 
+          ),
+          ListView.builder(
+            padding: EdgeInsets.all(10.0),
+            itemCount: meliponarios.length,
+            itemBuilder: (context, index){
+              return _createCard(context, index);
+            },
+
+          )
+        ],
       ),
-    );
+    ));
   }
 
   Widget _createCard(BuildContext context, int index) {
