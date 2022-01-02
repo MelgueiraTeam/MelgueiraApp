@@ -92,7 +92,9 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
 
   Widget _createCard(BuildContext context, int index) {
     return GestureDetector(
-      onTap: _showCaixasPage,
+      onTap: (){
+        _showCaixasPage(meliponarios[index].id);
+      },
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(10.0),
@@ -102,7 +104,7 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                 width: 80.0,
                 height: 80.0,
                 decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    //shape: BoxShape.circle,
                     image: DecorationImage(
                         image: meliponarios[index].image != null ?
                         FileImage(File(meliponarios[index].image)) :
@@ -133,8 +135,9 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                   ],
                 ),
               ),
+
               Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,//pedir para o professor pq n tá funcionando
                 children: [
                   IconButton(
                     icon: Icon(Icons.dashboard),
@@ -155,9 +158,9 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
     );
   }
 
-  void _showCaixasPage() {
+  void _showCaixasPage(int idApiario) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => CaixasPage()));
+        context, MaterialPageRoute(builder: (context) => CaixasPage(idApiario)));
   }
 
   void _showCadastroPage({Meliponario meliponario}) async{
@@ -171,8 +174,10 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
       }else{
         await helper.saveMeliponario(recMeliponario);
       }
-      _getAllMeliponarios();
     }
+      print(meliponarios.length);
+      _getAllMeliponarios();
+
   }
 
   void _showDashboardMeliponarioPage() {

@@ -36,33 +36,34 @@ class MeliponarioHelper {
     final path = join(dataBasePath, "meliponariosnew.db");
 
     return await openDatabase(path, version: 1, onCreate: (Database db, int newerVersion) async{
-      await db.execute(///cria a tabela dos meliponários
+      await db.execute(
         "CREATE TABLE $meliponarioTable($idColumn INTEGER PRIMARY KEY,"
             "$nomeColumn TEXT,"
             "$descricaoColumn TEXT,"
             "$dataColumn DATE, "
             "$imageColumn TEXT);"
-            //cria a tabela das caixas
+
+        /*
             "CREATE TABLE $caixaTable($idColumn INTEGER PRIMARY KEY,"
             "$nomeColumn TEXT,"
             "$descricaoColumn TEXT,"
             "$dataColumn DATA, "
-            "$imageColumn TEXT),"
+            "$imageColumn TEXT,"
             "$idMeliponarioColunm INTEGER FOREGEIN KEY,"
             "$valorMaximoTemperaturaColunm INTEGER,"
-            "$valorMinimoTemperaturaColunm INTEGER"
+            "$valorMinimoTemperaturaColunm INTEGER);"*/
       );
-/*
-      await db.execute(///cria a tabela das caixas
+
+      await db.execute(
           "CREATE TABLE $caixaTable($idColumn INTEGER PRIMARY KEY,"
               "$nomeColumn TEXT,"
               "$descricaoColumn TEXT,"
               "$dataColumn DATA, "
-              "$imageColumn TEXT),"
+              "$imageColumn TEXT,"
               "$idMeliponarioColunm INTEGER FOREGEIN KEY,"
               "$valorMaximoTemperaturaColunm INTEGER,"
-              "$valorMinimoTemperaturaColunm INTEGER"
-      );*/
+              "$valorMinimoTemperaturaColunm INTEGER);"
+      );
     });
 
   }
@@ -73,7 +74,8 @@ class MeliponarioHelper {
     return meliponario;
   }
 
-  Future<Caixa>saveCaixa(Caixa caixa) async{//faz o insert de uma caixa no db
+  ///faz um insert da caixa no db
+  Future<Caixa>saveCaixa(Caixa caixa) async{
     Database dbMeliponario = await db;
     caixa.id = await dbMeliponario.insert(caixaTable, caixa.toMap());
     return caixa;
@@ -99,6 +101,12 @@ class MeliponarioHelper {
     return await dbMeliponario.delete(meliponarioTable, where: "$idColumn = ?", whereArgs: [id]);
   }
 
+  ///deleta uma caixa usando seu id no bd
+  Future<int> deleteCaixa(int id) async{
+    Database dbMeliponario = await db;
+    return await dbMeliponario.delete(caixaTable, where: "$idColumn = ?", whereArgs: [id]);
+  }
+
   Future<int> deleteQueNucaMaisDevoUsarSenaoEuMefodo() async{//deleta um meliponário pelo id
     Database dbMeliponario = await db;
     return await dbMeliponario.delete(meliponarioTable);
@@ -112,7 +120,16 @@ class MeliponarioHelper {
         whereArgs: [meliponario.id]);
   }
 
-  Future<List> getAllMeliponarios() async{//retorna uma lista de Meliiponarios
+  Future<int> updateCaixa(Caixa caixa)async{//atualiza o meliponário
+    Database dbMeliponario = await db;
+    return await dbMeliponario.update(caixaTable,
+        caixa.toMap(),
+        where: "$idColumn = ?",
+        whereArgs: [caixa.id]);
+  }
+
+  ///retorna uma lista com todos os meliponários
+  Future<List> getAllMeliponarios() async{
     Database dbMeliponario = await db;
     List listaMeliponariosMap = await dbMeliponario.rawQuery("SELECT * FROM $meliponarioTable");
     List<Meliponario> listaMeliponarios = List();
@@ -122,13 +139,31 @@ class MeliponarioHelper {
     return listaMeliponarios;
   }
 
-  Future<List> getAllCaixas() async{//retorna uma lista de Meliiponarios
+  ///retorna uma lista com todas as caixas
+  Future<List> getAllCaixas() async{
     Database dbMeliponario = await db;
     List listaCaixasMap = await dbMeliponario.rawQuery("SELECT * FROM $caixaTable");
     List<Caixa> listaCaixas = List();
     for(Map m in listaCaixasMap){
       listaCaixas.add(Caixa.fromMap(m));
     }
+    print("qtd de dados: ");
+    print(listaCaixas.length);
+
+    return listaCaixas;
+  }
+
+  ///retorna uma lista com todas as caixas de um apiario
+  Future<List> getAllCaixasApiario(int idApiario) async{
+    Database dbMeliponario = await db;
+    List listaCaixasMap = await dbMeliponario.rawQuery("SELECT * FROM $caixaTable WHERE $idMeliponarioColunm = $idApiario");
+    List<Caixa> listaCaixas = List();
+    for(Map m in listaCaixasMap){
+      listaCaixas.add(Caixa.fromMap(m));
+    }
+    print("qtd de dados: ");
+    print(listaCaixas.length);
+
     return listaCaixas;
   }
 

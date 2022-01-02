@@ -26,7 +26,7 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.deepOrange,
+          backgroundColor: Color.fromARGB(255, 255, 166, 78),
           bottom: TabBar(
             indicatorColor: Colors.white,
             tabs: [

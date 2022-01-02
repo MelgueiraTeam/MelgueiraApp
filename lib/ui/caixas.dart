@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
 import 'package:prototipo_01/ui/cadastroCaixaPage.dart';
@@ -7,6 +9,11 @@ import 'package:prototipo_01/ui/detalhesCaixaPage.dart';
 enum OrderOptions { orderaz, orderdc }
 
 class CaixasPage extends StatefulWidget {
+
+  int idApiario;
+
+  CaixasPage(this.idApiario);
+
   @override
   _CaixasPageState createState() => _CaixasPageState();
 }
@@ -18,8 +25,10 @@ class _CaixasPageState extends State<CaixasPage> {
 
   @override
   void initState() {
-    _getAllCaixas();
     super.initState();
+
+    _getAllCaixas();
+    print("olá mundo");
   }
 
   @override
@@ -27,7 +36,7 @@ class _CaixasPageState extends State<CaixasPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Caixas"),
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Color.fromARGB(255, 255, 166, 78),
         centerTitle: true,
         actions: [
           PopupMenuButton<OrderOptions>(
@@ -50,9 +59,9 @@ class _CaixasPageState extends State<CaixasPage> {
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: _showCadastroPage,
+        onPressed: _showCadastroCaixaPage,
         child: Icon(Icons.add),
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Color.fromARGB(255, 255, 166, 78),
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(10.0),
@@ -67,7 +76,9 @@ class _CaixasPageState extends State<CaixasPage> {
 
   Widget _createCard(BuildContext context, int index) {
     return GestureDetector(
-      onTap: _showDetalhesCaixaPage,
+      onTap: (){
+        _showDetalhesCaixaPage(caixa: caixas[index]);
+      },
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(10.0),
@@ -77,9 +88,13 @@ class _CaixasPageState extends State<CaixasPage> {
                   width: 80.0,
                   height: 80.0,
                   decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      //shape: BoxShape.circle,
                       image: DecorationImage(
-                          image: AssetImage("images/person.png"))),
+                          image: caixas[index].image != null ?
+                          FileImage(File(caixas[index].image)) :
+                          AssetImage("images/person.png")
+                      )
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 10.0),
@@ -111,7 +126,9 @@ class _CaixasPageState extends State<CaixasPage> {
                       ),
                       IconButton(
                         icon: Icon(Icons.edit),
-                        onPressed: () {},
+                        onPressed: (){
+                          _showCadastroCaixaPage(caixa: caixas[index]);
+                        },
                       ),
                     ],
                   ),
@@ -123,14 +140,25 @@ class _CaixasPageState extends State<CaixasPage> {
     );
   }
 
-  void _showDetalhesCaixaPage(){
+  void _showDetalhesCaixaPage({Caixa caixa}){
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage()));
+        context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage(caixa: caixa)));
   }
-  
-  void _showCadastroPage() {
-    Navigator.push(
+
+  void _showCadastroPage({Caixa caixa}) async{
+    final recCaixa = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => CadastroCaixaPage()));
+
+    if(recCaixa != null){
+      if(caixa != null){
+        await helper.updateCaixa(recCaixa);
+      }else{
+        await helper.saveCaixa(recCaixa);
+      }
+    }
+
+    _getAllCaixas();
+    print(caixas.length);
   }
 
   void _showDashboardPage() {
@@ -140,21 +168,23 @@ class _CaixasPageState extends State<CaixasPage> {
 
   void _showCadastroCaixaPage({Caixa caixa}) async{
     final recCaixa = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => CadastroCaixaPage(caixa: caixa, helper: helper,))
+        context, MaterialPageRoute(builder: (context) => CadastroCaixaPage(caixa: caixa, helper: helper, idApiario: widget.idApiario,))
     );
 
     if(recCaixa != null){
-      if(recCaixa != null){
-        await helper.updateMeliponario(recCaixa);
+      if(caixa != null){
+        await helper.updateCaixa(recCaixa);
       }else{
-        await helper.saveMeliponario(recCaixa);
+        await helper.saveCaixa(recCaixa);
       }
-      _getAllCaixas();
     }
+
+    _getAllCaixas();
+
   }
 
   void _getAllCaixas(){
-    helper.getAllCaixas().then((list){
+    helper.getAllCaixasApiario(widget.idApiario).then((list){
       setState(() {
         caixas = list;
 

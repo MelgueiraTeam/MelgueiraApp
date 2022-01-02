@@ -28,7 +28,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.deepOrange,
+          backgroundColor: Color.fromARGB(255, 255, 166, 78),
           bottom: TabBar(
             indicatorColor: Colors.white,
             tabs: [

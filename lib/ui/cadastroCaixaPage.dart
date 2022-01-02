@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
 
 class CadastroCaixaPage extends StatefulWidget {
   final Caixa caixa;
   final MeliponarioHelper helper;
+  final idApiario;
 
-  const CadastroCaixaPage({this.caixa, this.helper});
+  const CadastroCaixaPage({this.caixa, this.helper, this.idApiario});
 
   @override
   _CadastroCaixaPageState createState() => _CadastroCaixaPageState();
@@ -17,8 +21,11 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
   final _nomeFocus = FocusNode();
 
   bool _editado = false; //verefica se houve alteração nos dados do meliponário
+  bool _excluir = false;
 
   Caixa _editedCaixa;
+
+
 
   @override
   void initState() {
@@ -27,7 +34,8 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
     if (widget.caixa == null) {
       _editedCaixa = Caixa();
       _editedCaixa.data = gerarData();
-      //_excluir = true;
+      _editedCaixa.idMeliponario = widget.idApiario;
+      _excluir = true;
     } else {
       _editedCaixa = Caixa.fromMap(widget.caixa.toMap());
 
@@ -37,53 +45,68 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.deepOrange,
-        title: Text("Cadastrar Caixa"),
-        centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_editedCaixa.nome != null && _editedCaixa.nome.isNotEmpty) {
-            Navigator.pop(context, _editedCaixa);
-          } else {
-            FocusScope.of(context).requestFocus(_nomeFocus);
-          }
-        },
-        child: Icon(Icons.save),
-        backgroundColor: Colors.deepOrange,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
-        child: Column(
-          //crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            GestureDetector(
-              child: Container(
-                width: 160.0,
-                height: 160.0,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        image: AssetImage("images/person.png"))),
+    return WillPopScope(
+      onWillPop: _requestPop,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 255, 166, 78),
+          title: Text(_editedCaixa.nome??"Cadastrar Caixa"),
+          centerTitle: true,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (_editedCaixa.nome != null && _editedCaixa.nome.isNotEmpty) {
+              Navigator.pop(context, _editedCaixa);
+            } else {
+              FocusScope.of(context).requestFocus(_nomeFocus);
+            }
+          },
+          child: Icon(Icons.save),
+          backgroundColor: Color.fromARGB(255, 255, 166, 78),
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
+          child: Column(
+            //crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10.0),
+                child: GestureDetector(
+                  child: Container(
+                    width: 160.0,
+                    height: 160.0,
+                    decoration: BoxDecoration(
+                      //shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: _editedCaixa.image != null ?
+                            FileImage(File(_editedCaixa.image)) :
+                            AssetImage("images/person.png"))),
+                  ),
+                  onTap: () {
+                    var picker = ImagePicker();
+                    picker.getImage(source: ImageSource.camera).then((file){
+                      if(file == null)return;
+                      setState(() {
+                        _editedCaixa.image = file.path;
+                      });
+                    });
+                  },
+                ),
               ),
-              onTap: () {}, //é preciso ter um bd para trocar a imagem
-            ),
-            TextField(
-                controller: _nomeController,
-                decoration: InputDecoration(
-                    labelText: "Nome Caixa",
-                    labelStyle: TextStyle(color: Colors.deepOrange),
-                    border: OutlineInputBorder()),
-                onChanged: (text) {
-                  _editado = true;
-                  setState(() {
-                    _editedCaixa.nome = text;
-                  });
-                }),
+              TextField(
+                  controller: _nomeController,
+                  decoration: InputDecoration(
+                      labelText: "Nome Caixa",
+                      labelStyle: TextStyle(color: Color.fromARGB(255, 255, 166, 78)),
+                      border: OutlineInputBorder()),
+                  onChanged: (text) {
+                    _editado = true;
+                    setState(() {
+                      _editedCaixa.nome = text;
+                    });
+                  }),
 
-            /*Divider(),
+              /*Divider(),
             Text(
               "Sistema de termoregulação",
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
@@ -116,7 +139,27 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
                 ),
               ],
             ),*/ //fora do escopo do meu pfc
-          ],
+              Padding(padding: EdgeInsets.only(top: 10.0),
+                child: Container(
+                  height: 50.0,
+                  child: RaisedButton(
+                    onPressed: (){
+                      //if(_excluir) {
+                      widget.helper.deleteCaixa(widget.caixa.id);
+                      Navigator.pop(context);
+                      //}
+                    },
+                    child: Text("Excluir",
+                      style: TextStyle(color: Colors.white, fontSize: 25.0),
+                    ),
+                    color: !_excluir?
+                    Colors.red :
+                    Colors.grey,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
