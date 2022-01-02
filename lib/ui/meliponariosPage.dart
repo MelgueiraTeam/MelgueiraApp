@@ -7,7 +7,7 @@ import 'package:prototipo_01/ui/cadastroMeliponario.dart';
 import 'package:prototipo_01/ui/caixas.dart';
 import 'package:prototipo_01/ui/dashboard_meliponario_page.dart';
 
-enum OrderOptions {orderaz, orderdc}
+enum OrderOptions { orderaz, orderdc }
 
 class TelaMeliponarios extends StatefulWidget {
   @override
@@ -17,11 +17,12 @@ class TelaMeliponarios extends StatefulWidget {
 class TelaMeliponariosState extends State<TelaMeliponarios> {
 
   MeliponarioHelper helper = MeliponarioHelper();
-  List<Meliponario> meliponarios = List();
+  List<Meliponario> cultivos = List();
+  int _tabAtual = 0;
 
 
   @override
-  initState(){
+  initState() {
     super.initState();
 
     _getAllMeliponarios();
@@ -29,71 +30,84 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(length: 2, child: Scaffold(
-      appBar: AppBar(
-        title: Text("MelgueirApp"),
-        backgroundColor: Color.fromARGB(255, 255, 166, 78),
-        centerTitle: true,
-        actions: [
-          PopupMenuButton<OrderOptions>(//copiei descaradamente pq n sabia direito o que tava fazendo kk
-            itemBuilder: (context) => <PopupMenuEntry<OrderOptions>>[
-              const PopupMenuItem<OrderOptions>(
-                child: Text ("Ordenar alfabeticamente"),
-                value: OrderOptions.orderaz,
+    return DefaultTabController(length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("MelgueirApp"),
+            backgroundColor: Color.fromARGB(255, 255, 166, 78),
+            centerTitle: true,
+            actions: [
+              PopupMenuButton<
+                  OrderOptions>( //copiei descaradamente pq n sabia direito o que tava fazendo kk
+                itemBuilder: (context) =>
+                <PopupMenuEntry<OrderOptions>>[
+                  const PopupMenuItem<OrderOptions>(
+                    child: Text("Ordenar alfabeticamente"),
+                    value: OrderOptions.orderaz,
 
-              ),
-              const PopupMenuItem<OrderOptions>(
-                child: Text ("Ordenar por data de criação"),
-                value: OrderOptions.orderdc,
+                  ),
+                  const PopupMenuItem<OrderOptions>(
+                    child: Text("Ordenar por data de criação"),
+                    value: OrderOptions.orderdc,
+                  ),
+                ],
+                onSelected: _ordenarLista,
               ),
             ],
-            onSelected: _ordenarLista,
-          ),
-        ],
-        bottom: TabBar(
-          tabs: [
-            Tab(
-              text: "Apiários",
+            bottom: TabBar(
+              onTap: (index){
+                _tabAtual = index;
+                print(index);
+                print(_tabAtual);
+                _getAllMeliponarios();
+              },
+              tabs: [
+                Tab(
+
+                  text: "Apiários",
+                ),
+                Tab(
+                  text: "Meliponários",
+                )
+              ],
             ),
-            Tab(
-              text: "Meliponários",
-            )
-          ],
-        ),
-      ),
-      backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCadastroPage,
-        child: Icon(Icons.add),
-        backgroundColor: Color.fromARGB(255, 255, 166, 78),
-      ),
-      body: TabBarView(
-        children: [
-          ListView.builder(
-            padding: EdgeInsets.all(10.0),
-            itemCount: meliponarios.length,
-            itemBuilder: (context, index){
-              return _createCard(context, index);
-            },
-
           ),
-          ListView.builder(
-            padding: EdgeInsets.all(10.0),
-            itemCount: meliponarios.length,
-            itemBuilder: (context, index){
-              return _createCard(context, index);
+          backgroundColor: Colors.white,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _showCadastroPage();
             },
+            child: Icon(Icons.add),
+            backgroundColor: Color.fromARGB(255, 255, 166, 78),
+          ),
+          body: TabBarView(
+            children: [
+              ListView.builder(
 
-          )
-        ],
-      ),
-    ));
+                padding: EdgeInsets.all(10.0),
+                itemCount: cultivos.length,
+                itemBuilder: (context, index) {
+                  return _createCard(context, index);
+                },
+
+              ),
+              ListView.builder(
+                padding: EdgeInsets.all(10.0),
+                itemCount: cultivos.length,
+                itemBuilder: (context, index) {
+                  return _createCard(context, index);
+                },
+
+              )
+            ],
+          ),
+        ));
   }
 
   Widget _createCard(BuildContext context, int index) {
     return GestureDetector(
-      onTap: (){
-        _showCaixasPage(meliponarios[index].id);
+      onTap: () {
+        _showCaixasPage(cultivos[index].id,);
       },
       child: Card(
         child: Padding(
@@ -104,10 +118,10 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                 width: 80.0,
                 height: 80.0,
                 decoration: BoxDecoration(
-                    //shape: BoxShape.circle,
+                  //shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: meliponarios[index].image != null ?
-                        FileImage(File(meliponarios[index].image)) :
+                        image: cultivos[index].image != null ?
+                        FileImage(File(cultivos[index].image)) :
                         AssetImage("images/person.png")
                     )
                 ),
@@ -118,18 +132,19 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      meliponarios[index].nome ?? "",//verificação inutil, já que, é impossivel salvar sem o nome
+                      cultivos[index].nome ?? "",
+                      //verificação inutil, já que, é impossivel salvar sem o nome
                       style: TextStyle(
                           fontSize: 20.0, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       //"Criado em: " + meliponarios[index].data ?? "sem data",
-                      meliponarios[index].data ?? "sem data",
+                      cultivos[index].data ?? "sem data",
                       style: TextStyle(fontSize: 16.0),
                     ),
                     Text(
                       //"Descrição: " + meliponarios[index].descricao ?? "",
-                      meliponarios[index].descricao ?? "",
+                      cultivos[index].descricao ?? "",
                       style: TextStyle(fontSize: 16.0),
                     ),
                   ],
@@ -137,7 +152,8 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
               ),
 
               Column(
-                crossAxisAlignment: CrossAxisAlignment.center,//pedir para o professor pq n tá funcionando
+                crossAxisAlignment: CrossAxisAlignment.center,
+                //pedir para o professor pq n tá funcionando
                 children: [
                   IconButton(
                     icon: Icon(Icons.dashboard),
@@ -145,8 +161,8 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                   ),
                   IconButton(
                     icon: Icon(Icons.edit),
-                    onPressed: (){
-                      _showCadastroPage(meliponario: meliponarios[index]);
+                    onPressed: () {
+                      _showCadastroPage(meliponario: cultivos[index]);
                     },
                   ),
                 ],
@@ -160,53 +176,67 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
 
   void _showCaixasPage(int idApiario) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => CaixasPage(idApiario)));
+        context,
+        MaterialPageRoute(builder: (context) => CaixasPage(idApiario)));
   }
 
-  void _showCadastroPage({Meliponario meliponario}) async{
+  void _showCadastroPage({Meliponario meliponario}) async {
     final recMeliponario = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => CadastroMeliponarioPage(meliponario: meliponario, helper: helper,))
+        context, MaterialPageRoute(builder: (context) =>
+        CadastroMeliponarioPage(meliponario: meliponario, helper: helper, cultivo: _tabAtual,))
     );
 
-    if(recMeliponario != null){
-      if(meliponario != null){
+    if (recMeliponario != null) {
+      if (meliponario != null) {
         await helper.updateMeliponario(recMeliponario);
-      }else{
+      } else {
         await helper.saveMeliponario(recMeliponario);
       }
     }
-      print(meliponarios.length);
-      _getAllMeliponarios();
+    print("cultivo: ");
+    print(recMeliponario.cultivo);
 
+    _getAllMeliponarios();
   }
 
   void _showDashboardMeliponarioPage() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DashboardMelponariosPage()));
+        context,
+        MaterialPageRoute(builder: (context) => DashboardMelponariosPage()));
   }
 
-  void _getAllMeliponarios(){
-    helper.getAllMeliponarios().then((list){
+  void _getAllMeliponarios() {
+    helper.getAllMeliponarios().then((list) {
       setState(() {
-        meliponarios = list;
-
+        cultivos = list;
+        _separarPorCultivo();
       });
     });
   }
 
-  void _ordenarLista(OrderOptions resultado){
-    switch(resultado){
+  void _separarPorCultivo  (){
+    List<Meliponario> aux = new List();
+    for(Meliponario m in cultivos){
+      if(m.cultivo == _tabAtual){
+        aux.add(m);
+      }
+    }
+    cultivos = aux;
+  }
+
+  void _ordenarLista(OrderOptions resultado) {
+    switch (resultado) {
       case OrderOptions.orderaz:
-        meliponarios.sort((a, b) {
+        cultivos.sort((a, b) {
           return a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
         });
         break;
       case OrderOptions.orderdc:
-        meliponarios.sort((a, b) {
-          return a.data.toLowerCase().compareTo(b.data.toLowerCase());//formatar de String para DataTime
+        cultivos.sort((a, b) {
+          return a.data.toLowerCase().compareTo(
+              b.data.toLowerCase()); //formatar de String para DataTime
         });
         break;
-
     }
     setState(() {
 

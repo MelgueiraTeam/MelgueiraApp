@@ -11,8 +11,9 @@ class CadastroMeliponarioPage extends StatefulWidget {
 
   final Meliponario meliponario;
   final MeliponarioHelper helper;
+  final int cultivo;
 
-  CadastroMeliponarioPage({this.meliponario, this.helper});
+  CadastroMeliponarioPage({this.meliponario, this.helper, this.cultivo});
 
   @override
   _CadastroMeliponarioPageState createState() => _CadastroMeliponarioPageState();
@@ -37,6 +38,8 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
     if(widget.meliponario == null){
       _editedMeliponario = Meliponario();
       _editedMeliponario.data = gerarData();
+      _editedMeliponario.cultivo = widget.cultivo;
+
       _excluir = true;
     }else{
       _editedMeliponario = Meliponario.fromMap(widget.meliponario.toMap());

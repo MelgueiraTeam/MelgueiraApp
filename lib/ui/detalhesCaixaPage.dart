@@ -19,6 +19,7 @@ class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
         length: 3,
+        initialIndex: 1,
         child: Scaffold(
           appBar: AppBar(
             title: Text("Detalhes Caixa01"),

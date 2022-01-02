@@ -7,6 +7,7 @@ final String nomeColumn = "nomeColumn";
 final String descricaoColumn = "descricaoColumn";
 final String dataColumn = "dataColumn";
 final String imageColumn = "imageColumn";
+final String cultivoColumn = "cultivoColumn";
 
 final String caixaTable = "caixaTable";
 final String idMeliponarioColunm = "idMeliponarioColunm";
@@ -41,7 +42,8 @@ class MeliponarioHelper {
             "$nomeColumn TEXT,"
             "$descricaoColumn TEXT,"
             "$dataColumn DATE, "
-            "$imageColumn TEXT);"
+            "$imageColumn TEXT,"
+            "$cultivoColumn INTEGER);"
 
         /*
             "CREATE TABLE $caixaTable($idColumn INTEGER PRIMARY KEY,"
@@ -139,6 +141,20 @@ class MeliponarioHelper {
     return listaMeliponarios;
   }
 
+  ///retorna uma lista de apiários ou meliponários
+  /*Future<List> getMeliponariosPorCultivo(List cultivo) async{
+    Database dbMeliponario = await db;
+    //List listaMeliponariosMap = await dbMeliponario.rawQuery("SELECT * FROM $meliponarioTable WHERE $cultivoColumn = $cultivo");
+    List listaMeliponariosMap = await dbMeliponario.query(meliponarioTable, where: "$cultivoColumn = ?", whereArgs: cultivo );
+    List<Meliponario> listaMeliponarios = List();
+    for(Map m in listaMeliponariosMap){
+      listaMeliponarios.add(Meliponario.fromMap(m));
+    }
+    print("resultados: ");
+    print(listaMeliponarios.length);
+    return listaMeliponarios;
+  }*/
+
   ///retorna uma lista com todas as caixas
   Future<List> getAllCaixas() async{
     Database dbMeliponario = await db;
@@ -184,7 +200,7 @@ class Meliponario {
   String descricao;
   String data;
   String image;
-
+  int cultivo;//1 para meliponario 0 para apiario
 
   Meliponario();
 
@@ -194,6 +210,7 @@ class Meliponario {
     descricao = map[descricaoColumn];
     data = map[dataColumn];//primeiro erro, nome da variável errado.
     image = map[imageColumn];
+    cultivo = map[cultivoColumn];
   }
 
   Map toMap(){
@@ -201,7 +218,8 @@ class Meliponario {
       nomeColumn: nome,
       descricaoColumn: descricao,
       dataColumn: data,
-      imageColumn: image
+      imageColumn: image,
+      cultivoColumn: cultivo
     };
 
     if(id != null){
@@ -213,7 +231,7 @@ class Meliponario {
 
   @override
   String toString() {
-    return "Meliponário(id: $id, nome: $nome, descrição: $descricao, data: $data, imagem: $image)";
+    return 'Meliponario{id: $id, nome: $nome, descricao: $descricao, data: $data, image: $image, cultivo: $cultivo}';
   }
 }
 
