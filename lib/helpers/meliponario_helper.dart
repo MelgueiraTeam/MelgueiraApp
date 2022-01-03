@@ -14,6 +14,13 @@ final String idMeliponarioColunm = "idMeliponarioColunm";
 final String valorMaximoTemperaturaColunm = "valorMaximoTemperaturaColunm";
 final String valorMinimoTemperaturaColunm = "valorMinimoTemperaturaColunm";
 
+final String coletaTable = "coletaTable";
+final String quantidadeColumn = "quantidadeColumn";
+final String idCaixaColumn = "idCaixaColumn";
+
+final String alimentacaoTable = "alimentacaoTable";
+final String tipoAlimentacaoColumn = "tipoAlimentacaoColumn";
+
 class MeliponarioHelper {
   static final MeliponarioHelper _instance = MeliponarioHelper.internal();
 
@@ -41,7 +48,7 @@ class MeliponarioHelper {
         "CREATE TABLE $meliponarioTable($idColumn INTEGER PRIMARY KEY,"
             "$nomeColumn TEXT,"
             "$descricaoColumn TEXT,"
-            "$dataColumn DATE, "
+            "$dataColumn TEXT, "
             "$imageColumn TEXT,"
             "$cultivoColumn INTEGER);"
 
@@ -50,23 +57,39 @@ class MeliponarioHelper {
             "$nomeColumn TEXT,"
             "$descricaoColumn TEXT,"
             "$dataColumn DATA, "
-            "$imageColumn TEXT,"
+            "$imageColumn TEXT),"
             "$idMeliponarioColunm INTEGER FOREGEIN KEY,"
             "$valorMaximoTemperaturaColunm INTEGER,"
-            "$valorMinimoTemperaturaColunm INTEGER);"*/
+            "$valorMinimoTemperaturaColunm INTEGER"*/
       );
 
       await db.execute(
           "CREATE TABLE $caixaTable($idColumn INTEGER PRIMARY KEY,"
               "$nomeColumn TEXT,"
               "$descricaoColumn TEXT,"
-              "$dataColumn DATA, "
+              "$dataColumn TEXT,"
               "$imageColumn TEXT,"
-              "$idMeliponarioColunm INTEGER FOREGEIN KEY,"
+              "$idMeliponarioColunm INTEGER,"
               "$valorMaximoTemperaturaColunm INTEGER,"
               "$valorMinimoTemperaturaColunm INTEGER);"
       );
-    });
+
+      await db.execute(
+        "CREATE TABLE $coletaTable($idColumn INTEGER PRIMARY KEY,"
+            "$dataColumn TEXT,"
+            "$quantidadeColumn REAL,"
+            "$idCaixaColumn INTEGER);"
+      );
+
+      await db.execute(
+        "CREATE TABLE $alimentacaoTable($idColumn INTEGER PRIMARY KEY,"
+            "$dataColumn TEXT,"
+            "$quantidadeColumn REAL"
+            "$tipoAlimentacaoColumn INTEGER,"
+            "$idCaixaColumn INTEGER);"
+      );
+    }
+    );
 
   }
 
@@ -76,11 +99,17 @@ class MeliponarioHelper {
     return meliponario;
   }
 
-  ///faz um insert da caixa no db
-  Future<Caixa>saveCaixa(Caixa caixa) async{
+  Future<Caixa>saveCaixa(Caixa caixa) async{//faz o insert de uma caixa no db
     Database dbMeliponario = await db;
     caixa.id = await dbMeliponario.insert(caixaTable, caixa.toMap());
     return caixa;
+  }
+
+  ///salva uma coleta e define seu id
+  Future<Coleta>saveColeta(Coleta coleta) async{
+    Database dbMeliponario = await db;
+    coleta.id = await dbMeliponario.insert(coletaTable, coleta.toMap());
+    return coleta;
   }
 
   Future<Meliponario>getMeliponario(int id) async{//faz uma query por meio do id
@@ -98,12 +127,14 @@ class MeliponarioHelper {
     }
   }
 
-  Future<int> deleteMeliponario(int id) async{//deleta um meliponário pelo id
+  ///deleta um apiário e todas as suas caixas pelo id
+  Future<int> deleteMeliponario(int id) async{
     Database dbMeliponario = await db;
+    await dbMeliponario.delete(caixaTable, where: "$idMeliponarioColunm = ?", whereArgs: [id]);
     return await dbMeliponario.delete(meliponarioTable, where: "$idColumn = ?", whereArgs: [id]);
   }
 
-  ///deleta uma caixa usando seu id no bd
+  ///deleta uma caixa usando seu id
   Future<int> deleteCaixa(int id) async{
     Database dbMeliponario = await db;
     return await dbMeliponario.delete(caixaTable, where: "$idColumn = ?", whereArgs: [id]);
@@ -122,7 +153,8 @@ class MeliponarioHelper {
         whereArgs: [meliponario.id]);
   }
 
-  Future<int> updateCaixa(Caixa caixa)async{//atualiza o meliponário
+  ///atualiza uma caixa atraves do objeto
+  Future<int> upadateCaixa(Caixa caixa)async{
     Database dbMeliponario = await db;
     return await dbMeliponario.update(caixaTable,
         caixa.toMap(),
@@ -130,8 +162,7 @@ class MeliponarioHelper {
         whereArgs: [caixa.id]);
   }
 
-  ///retorna uma lista com todos os meliponários
-  Future<List> getAllMeliponarios() async{
+  Future<List> getAllMeliponarios() async{//retorna uma lista de Meliiponarios
     Database dbMeliponario = await db;
     List listaMeliponariosMap = await dbMeliponario.rawQuery("SELECT * FROM $meliponarioTable");
     List<Meliponario> listaMeliponarios = List();
@@ -141,11 +172,20 @@ class MeliponarioHelper {
     return listaMeliponarios;
   }
 
-  ///retorna uma lista de apiários ou meliponários
-  /*Future<List> getMeliponariosPorCultivo(List cultivo) async{
+  Future<List> getAllColetas() async{//retorna uma lista de Meliiponarios
     Database dbMeliponario = await db;
-    //List listaMeliponariosMap = await dbMeliponario.rawQuery("SELECT * FROM $meliponarioTable WHERE $cultivoColumn = $cultivo");
-    List listaMeliponariosMap = await dbMeliponario.query(meliponarioTable, where: "$cultivoColumn = ?", whereArgs: cultivo );
+    List listaColetasMap = await dbMeliponario.rawQuery("SELECT * FROM $coletaTable");
+    List<Coleta> listaColetas = List();
+    for(Map m in listaColetasMap){
+      listaColetas.add(Coleta.fromMap(m));
+    }
+    return listaColetas;
+  }
+
+  ///retorna uma lista de apiários ou meliponários
+  Future<List> getMeliponariosPorCultivo(int cultivo) async{
+    Database dbMeliponario = await db;
+    List listaMeliponariosMap = await dbMeliponario.rawQuery("SELECT * FROM $meliponarioTable WHERE $cultivoColumn = $cultivo");
     List<Meliponario> listaMeliponarios = List();
     for(Map m in listaMeliponariosMap){
       listaMeliponarios.add(Meliponario.fromMap(m));
@@ -153,20 +193,23 @@ class MeliponarioHelper {
     print("resultados: ");
     print(listaMeliponarios.length);
     return listaMeliponarios;
-  }*/
+  }
 
   ///retorna uma lista com todas as caixas
   Future<List> getAllCaixas() async{
+
     Database dbMeliponario = await db;
     List listaCaixasMap = await dbMeliponario.rawQuery("SELECT * FROM $caixaTable");
     List<Caixa> listaCaixas = List();
     for(Map m in listaCaixasMap){
       listaCaixas.add(Caixa.fromMap(m));
     }
-    print("qtd de dados: ");
-    print(listaCaixas.length);
-
     return listaCaixas;
+  }
+
+  Future<int> getNumberMeliponario() async{//ao fim da implementação dessa classe tornar essa função utilizavel para toda as tabelas || passar o parametro table
+    Database dbMeliponario = await db;
+    return Sqflite.firstIntValue(await dbMeliponario.rawQuery("SELECT COUNT(*) FROM $meliponarioTable"));//usar tabel ao invés de meliponário table
   }
 
   ///retorna uma lista com todas as caixas de um apiario
@@ -183,9 +226,17 @@ class MeliponarioHelper {
     return listaCaixas;
   }
 
-  Future<int> getNumberMeliponario() async{//ao fim da implementação dessa classe tornar essa função utilizavel para toda as tabelas || passar o parametro table
+  Future<List> getAllColetasPorCaixa(int idCaixa) async{
     Database dbMeliponario = await db;
-    return Sqflite.firstIntValue(await dbMeliponario.rawQuery("SELECT COUNT(*) FROM $meliponarioTable"));//usar tabel ao invés de meliponário table
+    List listaColetasMap = await dbMeliponario.rawQuery("SELECT * FROM $coletaTable WHERE $idCaixaColumn = $idCaixa");
+    List<Coleta> listaColetas = List();
+    for(Map m in listaColetasMap){
+      listaColetas.add(Coleta.fromMap(m));
+    }
+    print("qtd de dados: ");
+    print(listaColetas.length);
+
+    return listaColetas;
   }
 
   Future close() async{
@@ -277,6 +328,82 @@ class Caixa {
   @override
   String toString() {
     return "Caixa(id: $id, nome: $nome, data: $data, idMeliponário: $idMeliponario)";
+  }
+}
+
+class Coleta {
+  int id;
+  double quantidade;
+  String data;
+  int idCaixa;
+
+
+  Coleta();
+
+  Coleta.fromMap(Map map){
+    id = map[idColumn];
+    quantidade = map[quantidadeColumn];
+    data = map[dataColumn];
+    idCaixa = map[idCaixaColumn];
+  }
+
+  Map toMap(){
+    Map<String, dynamic> map = {
+      dataColumn: data,
+      quantidadeColumn: quantidade,
+      idCaixaColumn: idCaixa
+    };
+
+    if(id != null){
+      map[idColumn] = id;
+    }
+
+    return map;
+  }
+
+  @override
+  String toString() {
+    return 'Coleta{id: $id, quantidade: $quantidade, data: $data, idCaixa: $idCaixa}';
+  }
+}
+
+class Alimentacao {
+  int id;
+  double quantidade;
+  String data;
+  int tipo;//0 para energética, 1 para protéica, 2 para mista
+  int idCaixa;
+
+
+
+  Alimentacao();
+
+  Alimentacao.fromMap(Map map){
+    id = map[idColumn];
+    quantidade = map[quantidadeColumn];
+    data = map[dataColumn];
+    tipo = map[tipoAlimentacaoColumn];
+    idCaixa = map[idCaixaColumn];
+  }
+
+  Map toMap(){
+    Map<String, dynamic> map = {
+      dataColumn: data,
+      quantidadeColumn: quantidade,
+      tipoAlimentacaoColumn: tipo,
+      idCaixaColumn: idCaixa
+    };
+
+    if(id != null){
+      map[idColumn] = id;
+    }
+
+    return map;
+  }
+
+  @override
+  String toString() {
+    return 'Coleta{id: $id, quantidade: $quantidade, data: $data, idCaixa: $idCaixa}';
   }
 }
 

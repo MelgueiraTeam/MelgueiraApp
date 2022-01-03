@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       children: [
         Scaffold(
-          drawer: CustomDrawer(),
+          //drawer: CustomDrawer(),
           body: TelaMeliponarios(),
         )
       ],

@@ -11,9 +11,9 @@ enum OrderOptions { orderaz, orderdc }
 class CaixasPage extends StatefulWidget {
 
   int idApiario;
-
-  CaixasPage(this.idApiario);
-
+  
+  CaixasPage({this.idApiario});
+  
   @override
   _CaixasPageState createState() => _CaixasPageState();
 }
@@ -26,9 +26,7 @@ class _CaixasPageState extends State<CaixasPage> {
   @override
   void initState() {
     super.initState();
-
     _getAllCaixas();
-    print("olá mundo");
   }
 
   @override
@@ -54,14 +52,17 @@ class _CaixasPageState extends State<CaixasPage> {
                 child: Text("Ordenar por temperatura(decrescente)"),
               ),
             ],
+            onSelected: _ordenarLista,
           ),
         ],
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: _showCadastroCaixaPage,
+        onPressed: (){
+          _showCadastroCaixaPage(idApiario: widget.idApiario);
+        },
         child: Icon(Icons.add),
-        backgroundColor: Color.fromARGB(255, 255, 166, 78),
+        //backgroundColor: Color.fromARGB(255, 255, 166, 78),
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(10.0),
@@ -126,7 +127,7 @@ class _CaixasPageState extends State<CaixasPage> {
                       ),
                       IconButton(
                         icon: Icon(Icons.edit),
-                        onPressed: (){
+                        onPressed: () {
                           _showCadastroCaixaPage(caixa: caixas[index]);
                         },
                       ),
@@ -142,23 +143,12 @@ class _CaixasPageState extends State<CaixasPage> {
 
   void _showDetalhesCaixaPage({Caixa caixa}){
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage(caixa: caixa)));
+        context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage(caixa: caixa,)));
   }
-
-  void _showCadastroPage({Caixa caixa}) async{
-    final recCaixa = await Navigator.push(
+  
+  void _showCadastroPage() {
+    Navigator.push(
         context, MaterialPageRoute(builder: (context) => CadastroCaixaPage()));
-
-    if(recCaixa != null){
-      if(caixa != null){
-        await helper.updateCaixa(recCaixa);
-      }else{
-        await helper.saveCaixa(recCaixa);
-      }
-    }
-
-    _getAllCaixas();
-    print(caixas.length);
   }
 
   void _showDashboardPage() {
@@ -166,21 +156,19 @@ class _CaixasPageState extends State<CaixasPage> {
         MaterialPageRoute(builder: (context) => DashboardCaixasPage()));
   }
 
-  void _showCadastroCaixaPage({Caixa caixa}) async{
+  void _showCadastroCaixaPage({Caixa caixa, int idApiario}) async{
     final recCaixa = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => CadastroCaixaPage(caixa: caixa, helper: helper, idApiario: widget.idApiario,))
+        context, MaterialPageRoute(builder: (context) => CadastroCaixaPage(caixa: caixa, helper: helper, idApiario: idApiario,))
     );
 
     if(recCaixa != null){
       if(caixa != null){
-        await helper.updateCaixa(recCaixa);
+        await helper.upadateCaixa(recCaixa);
       }else{
         await helper.saveCaixa(recCaixa);
       }
     }
-
     _getAllCaixas();
-
   }
 
   void _getAllCaixas(){
@@ -189,6 +177,25 @@ class _CaixasPageState extends State<CaixasPage> {
         caixas = list;
 
       });
+    });
+  }
+
+  void _ordenarLista(OrderOptions resultado) {
+    switch (resultado) {
+      case OrderOptions.orderaz:
+        caixas.sort((a, b) {
+          return a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
+        });
+        break;
+      case OrderOptions.orderdc:
+        caixas.sort((a, b) {
+          return a.data.toLowerCase().compareTo(
+              b.data.toLowerCase()); //formatar de String para DataTime
+        });
+        break;
+    }
+    setState(() {
+
     });
   }
 }
