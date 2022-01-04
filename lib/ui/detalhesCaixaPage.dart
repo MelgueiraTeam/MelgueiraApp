@@ -69,7 +69,7 @@ class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
                 )
               ],
             ),
-            AlimentacaoPage(),
+            AlimentacaoPage(idCaixa: widget.caixa.id,),
             /*
             Padding(
               padding: EdgeInsets.all(10.0),

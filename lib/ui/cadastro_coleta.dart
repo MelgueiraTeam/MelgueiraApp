@@ -37,6 +37,7 @@ class _CadastroColetaState extends State<CadastroColeta> {
       body: Padding(
         padding: EdgeInsets.all(50.0),
         child: TextField(
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
           controller: _qtdController,
           decoration: InputDecoration(
             labelText: "Peso coleta (Em kg)",

@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:prototipo_01/helpers/meliponario_helper.dart';
 import 'package:prototipo_01/ui/cadastro_alimentacao.dart';
 
 class AlimentacaoPage extends StatefulWidget {
+  final int idCaixa;
+
+  AlimentacaoPage({this.idCaixa});
 
   @override
   _AlimentacaoPageState createState() => _AlimentacaoPageState();
 }
 
 class _AlimentacaoPageState extends State<AlimentacaoPage> {
+  List<Alimentacao> alimentacoes = new List();
+  MeliponarioHelper helper = new MeliponarioHelper();
+
+  @override
+  void initState() {
+    super.initState();
+    _getAllAlimentacoes();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,25 +28,16 @@ class _AlimentacaoPageState extends State<AlimentacaoPage> {
         onPressed: _showCadastroAliementacaoPage,
         child: Icon(Icons.add),
       ),
-      body: ListView(
-        children: [
-          _createCardAlimentacao("10", "01/01/2022", "enérgica"),
-          _createCardAlimentacao("07", "01/01/2021", "protéica"),
-          _createCardAlimentacao("10", "01/01/2022", "enérgica"),
-          _createCardAlimentacao("07", "01/01/2021", "protéica"),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _createCardAlimentacao("10", "01/01/2022", "enérgica"),
-            ),
-          ),
-          _createCardAlimentacao("07", "01/01/2021", "protéica"),
-        ],
+      body: ListView.builder(
+        itemCount: alimentacoes.length,
+          itemBuilder: (context, index){
+            return _createCardAlimentacao(context, index);
+          }
       ),
-    );;
+    );
   }
 
-  Widget _createCardAlimentacao(String qtd, String data, String tipo) {
+  Widget _createCardAlimentacao(BuildContext context, int index) {
     return Card(
       child: Container(
         padding: EdgeInsets.all(20.0),
@@ -41,13 +45,16 @@ class _AlimentacaoPageState extends State<AlimentacaoPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Alimentação dia: " + data,
+              "Alimentação dia: " + alimentacoes[index].data,
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
-            Text(qtd + "Kg",
+            Text(
+              alimentacoes[index].quantidade.toString() + "Kg",
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
-            Text(tipo,
+            Text(
+              _gerarNomeTipoAlimentacao(alimentacoes[index].tipo),
+              //alimentacoes[index].tipo.toString(),
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
           ],
@@ -56,8 +63,37 @@ class _AlimentacaoPageState extends State<AlimentacaoPage> {
     );
   }
 
-  void _showCadastroAliementacaoPage(){
-    Navigator.push(context, MaterialPageRoute(builder: (context) => CadastroAlimentacao()));
+  String _gerarNomeTipoAlimentacao(int tipo){
+    String nomeTipo;
+
+    if(tipo == null){
+      nomeTipo = "não especificado";
+    }else if(tipo == 0){
+      nomeTipo = "Energética";
+    }else if(tipo == 1){
+      nomeTipo = "Protéica";
+    }else{
+      nomeTipo = "Mista";
+    }
+
+    return nomeTipo;
   }
 
+  void _showCadastroAliementacaoPage() async {
+    final recAlimentacao = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => CadastroAlimentacao(idCaixa: widget.idCaixa,)));
+
+    if (recAlimentacao != null) {
+      helper.saveAlimentacao(recAlimentacao);
+    }
+    _getAllAlimentacoes();
+  }
+
+  void _getAllAlimentacoes() {
+    helper.getAllAlimwntacaoesPorCaixa(widget.idCaixa).then((list) {
+      setState(() {
+        alimentacoes = list;
+      });
+    });
+  }
 }

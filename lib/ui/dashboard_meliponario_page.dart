@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:prototipo_01/helpers/meliponario_helper.dart';
 
 class DashboardMelponariosPage extends StatefulWidget {
+
+  final int idMeliponario;
+
+
+  DashboardMelponariosPage({this.idMeliponario});
+
   @override
   _DashboardMelponariosPageState createState() => _DashboardMelponariosPageState();
 }
@@ -10,6 +17,7 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
 
   List<charts.Series<Task, String>> _seriesPieData;
   List<charts.Series> _seriesList;
+  MeliponarioHelper _helper = new MeliponarioHelper();
 
 
   @override
@@ -137,9 +145,11 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
     )];
   }
 
-  _generatorData(){
+  _generatorData() async{
+    double porcentagem = await _helper.getPorcentagemProducaoMeliponario(widget.idMeliponario);
+    Meliponario meliponario = await _helper.getMeliponario(widget.idMeliponario);
     var pieData=[
-      new Task("Produção Meliponario01", 47.5, Color(0xffb74093)),
+      new Task("Produção " + meliponario.nome, porcentagem, Color(0xffb74093)),
       new Task("Poducão Total", (100 - 47.5), Color(0xff555555))
     ];
 

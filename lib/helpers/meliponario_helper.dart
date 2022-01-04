@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -84,7 +85,7 @@ class MeliponarioHelper {
       await db.execute(
         "CREATE TABLE $alimentacaoTable($idColumn INTEGER PRIMARY KEY,"
             "$dataColumn TEXT,"
-            "$quantidadeColumn REAL"
+            "$quantidadeColumn REAL,"
             "$tipoAlimentacaoColumn INTEGER,"
             "$idCaixaColumn INTEGER);"
       );
@@ -112,6 +113,15 @@ class MeliponarioHelper {
     return coleta;
   }
 
+  ///salva uma alimentação e define seu id
+  Future<Alimentacao>saveAlimentacao(Alimentacao alimentacao) async{
+    Database dbMeliponario = await db;
+    alimentacao.id = await dbMeliponario.insert(alimentacaoTable, alimentacao.toMap());
+    print("Salvo com o id: ");
+    print(alimentacao.id);
+    return alimentacao;
+  }
+
   Future<Meliponario>getMeliponario(int id) async{//faz uma query por meio do id
     Database dbMeliponario = await db;
     List<Map> maps = await dbMeliponario.query(meliponarioTable,
@@ -134,9 +144,11 @@ class MeliponarioHelper {
     return await dbMeliponario.delete(meliponarioTable, where: "$idColumn = ?", whereArgs: [id]);
   }
 
-  ///deleta uma caixa usando seu id
+  ///deleta uma caixa, suas coletas e suas alimentações usando seu id
   Future<int> deleteCaixa(int id) async{
     Database dbMeliponario = await db;
+    await dbMeliponario.delete(coletaTable, where: "$idCaixaColumn = ?", whereArgs: [id]);
+    await dbMeliponario.delete(alimentacaoTable, where: "$idCaixaColumn = ?", whereArgs: [id]);
     return await dbMeliponario.delete(caixaTable, where: "$idColumn = ?", whereArgs: [id]);
   }
 
@@ -161,6 +173,44 @@ class MeliponarioHelper {
         where: "$idColumn = ?",
         whereArgs: [caixa.id]);
   }
+
+  Future<double> getPorcentagemProducaoMeliponario(int idMeliponario) async{
+    List<Meliponario> listaMeliponarios = await getAllMeliponarios();
+
+    double somaTotal = 0;
+    double somaMeliponario = 0;
+
+    for(int i = 0; i < listaMeliponarios.length; i++){
+      List<Caixa> listaCaixa = await getAllCaixasApiario(listaMeliponarios[i].id);
+      somaTotal = await somarProducao(listaCaixa);
+    }
+
+    List<Caixa> listaCaixa = await getAllCaixasApiario(idMeliponario);
+    somaMeliponario = await somarProducao(listaCaixa);
+
+    return (100 * somaMeliponario)/somaTotal;
+  }
+
+  Future<double> somarProducao(List<Caixa> listaCaixas) async{
+    double producaoTotal = 0;
+
+    for(int i = 0; i < listaCaixas.length; i++){
+      Caixa caixa = listaCaixas[i];
+      int id = caixa.id;
+      List<Coleta> listaColetas =  await getAllColetasPorCaixa(id);
+      producaoTotal += somarColetas(listaColetas);
+    }
+  }
+
+  double somarColetas(List listaColetas){
+    double producaoTotal = 0;
+
+    for(int i = 0; i < listaColetas.length; i++){
+      producaoTotal += listaColetas[i].quantidade;
+  }
+    return producaoTotal;
+  }
+
 
   Future<List> getAllMeliponarios() async{//retorna uma lista de Meliiponarios
     Database dbMeliponario = await db;
@@ -207,6 +257,19 @@ class MeliponarioHelper {
     return listaCaixas;
   }
 
+  Future<List> getAllAlimentacoes() async{
+
+    Database dbMeliponario = await db;
+    List listaAlimentacoesMap = await dbMeliponario.rawQuery("SELECT * FROM $alimentacaoTable");
+    List<Alimentacao> listaAlimentacoes = List();
+    for(Map m in listaAlimentacoesMap){
+      listaAlimentacoes.add(Alimentacao.fromMap(m));
+    }
+    //print("aliimentações: " + listaAlimentacoes.length.toString());
+
+    return listaAlimentacoes;
+  }
+
   Future<int> getNumberMeliponario() async{//ao fim da implementação dessa classe tornar essa função utilizavel para toda as tabelas || passar o parametro table
     Database dbMeliponario = await db;
     return Sqflite.firstIntValue(await dbMeliponario.rawQuery("SELECT COUNT(*) FROM $meliponarioTable"));//usar tabel ao invés de meliponário table
@@ -237,6 +300,19 @@ class MeliponarioHelper {
     print(listaColetas.length);
 
     return listaColetas;
+  }
+
+  Future<List> getAllAlimwntacaoesPorCaixa(int idCaixa) async{
+    Database dbMeliponario = await db;
+    List listaAlimentacoesMap = await dbMeliponario.rawQuery("SELECT * FROM $alimentacaoTable WHERE $idCaixaColumn = $idCaixa");
+    List<Alimentacao> listaAlimentacaos = List();
+    for(Map m in listaAlimentacoesMap){
+      listaAlimentacaos.add(Alimentacao.fromMap(m));
+    }
+    print("qtd de dados: ");
+    print(listaAlimentacaos.length);
+
+    return listaAlimentacaos;
   }
 
   Future close() async{
@@ -403,7 +479,7 @@ class Alimentacao {
 
   @override
   String toString() {
-    return 'Coleta{id: $id, quantidade: $quantidade, data: $data, idCaixa: $idCaixa}';
+    return 'Alimentacao{id: $id, quantidade: $quantidade, data: $data, tipo: $tipo, idCaixa: $idCaixa}';
   }
 }
 
