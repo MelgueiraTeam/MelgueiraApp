@@ -4,10 +4,11 @@ import 'package:prototipo_01/helpers/meliponario_helper.dart';
 
 class DashboardMelponariosPage extends StatefulWidget {
 
-  final int idMeliponario;
+  final Meliponario meliponario;
 
 
-  DashboardMelponariosPage({this.idMeliponario});
+
+  DashboardMelponariosPage({this.meliponario});
 
   @override
   _DashboardMelponariosPageState createState() => _DashboardMelponariosPageState();
@@ -15,13 +16,15 @@ class DashboardMelponariosPage extends StatefulWidget {
 
 class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
 
+
   List<charts.Series<Task, String>> _seriesPieData;
+
   List<charts.Series> _seriesList;
   MeliponarioHelper _helper = new MeliponarioHelper();
 
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
     _seriesPieData = List<charts.Series<Task, String>>();
     _generatorData();
@@ -59,7 +62,7 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                   child: Column(
                     children: [
                       Text(
-                        "Produção: Meliponario01",
+                        "Produção: " + widget.meliponario.nome,
                         style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10.0,),
@@ -128,7 +131,12 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
       ),
     );
   }
-  static List<charts.Series<ProducaoAnual, String>> _createSampleData(){
+   List<charts.Series<ProducaoAnual, String>> _createSampleData(){
+    List<int> anos = List();
+
+    _helper.getAnosColetas().then((list) {
+      anos = list;
+    });
     final data = [
       new ProducaoAnual('2017', 3.9),
       new ProducaoAnual('2018', 3.2),
@@ -146,11 +154,12 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
   }
 
   _generatorData() async{
-    double porcentagem = await _helper.getPorcentagemProducaoMeliponario(widget.idMeliponario);
-    Meliponario meliponario = await _helper.getMeliponario(widget.idMeliponario);
+    double porcentagem = await _helper.getPorcentagemProducaoMeliponario(widget.meliponario.id);
+    Meliponario meliponario = await _helper.getMeliponario(widget.meliponario.id);
+
     var pieData=[
       new Task("Produção " + meliponario.nome, porcentagem, Color(0xffb74093)),
-      new Task("Poducão Total", (100 - 47.5), Color(0xff555555))
+      new Task("Poducão Total", (100.0 - porcentagem), Color(0xff555555))
     ];
 
     _seriesPieData.add(

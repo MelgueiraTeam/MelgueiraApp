@@ -71,6 +71,7 @@ class _CadastroColetaState extends State<CadastroColeta> {
     int mes = data.month;
     int ano = data.year;
 
+    _editedColeta.ano = ano;
     //eu sei que é xunxu
     //no futuro usar plugins para formatar no padrão PT-BR
 

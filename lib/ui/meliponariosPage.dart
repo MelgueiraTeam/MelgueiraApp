@@ -171,7 +171,7 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                   IconButton(
                     icon: Icon(Icons.dashboard),
                     onPressed: (){
-                      _showDashboardMeliponarioPage(cultivos[index].id);
+                      _showDashboardMeliponarioPage(cultivos[index]);
                     },
                   ),
                   IconButton(
@@ -218,10 +218,10 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
 
   }
 
-  void _showDashboardMeliponarioPage(int idMeliponario) {
+  void _showDashboardMeliponarioPage(Meliponario meliponario) {
     Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => DashboardMelponariosPage(idMeliponario: idMeliponario,)));
+        MaterialPageRoute(builder: (context) => DashboardMelponariosPage(meliponario: meliponario,)));
   }
 
   void _getAllMeliponarios() {

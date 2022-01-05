@@ -18,6 +18,7 @@ final String valorMinimoTemperaturaColunm = "valorMinimoTemperaturaColunm";
 final String coletaTable = "coletaTable";
 final String quantidadeColumn = "quantidadeColumn";
 final String idCaixaColumn = "idCaixaColumn";
+final String anoColumn = "anoColumn";
 
 final String alimentacaoTable = "alimentacaoTable";
 final String tipoAlimentacaoColumn = "tipoAlimentacaoColumn";
@@ -79,6 +80,7 @@ class MeliponarioHelper {
         "CREATE TABLE $coletaTable($idColumn INTEGER PRIMARY KEY,"
             "$dataColumn TEXT,"
             "$quantidadeColumn REAL,"
+            "$anoColumn INTEGER,"
             "$idCaixaColumn INTEGER);"
       );
 
@@ -122,7 +124,9 @@ class MeliponarioHelper {
     return alimentacao;
   }
 
-  Future<Meliponario>getMeliponario(int id) async{//faz uma query por meio do id
+
+  ///faz uma query no bd por meio do id do apiário ou meliponário
+  Future<Meliponario>getMeliponario(int id) async{
     Database dbMeliponario = await db;
     List<Map> maps = await dbMeliponario.query(meliponarioTable,
       columns: [idColumn, nomeColumn, dataColumn, imageColumn],
@@ -182,13 +186,30 @@ class MeliponarioHelper {
 
     for(int i = 0; i < listaMeliponarios.length; i++){
       List<Caixa> listaCaixa = await getAllCaixasApiario(listaMeliponarios[i].id);
-      somaTotal = await somarProducao(listaCaixa);
+      somaTotal += await somarProducao(listaCaixa);
     }
 
     List<Caixa> listaCaixa = await getAllCaixasApiario(idMeliponario);
     somaMeliponario = await somarProducao(listaCaixa);
 
     return (100 * somaMeliponario)/somaTotal;
+  }
+
+  Future<List> getProducaoAnualMeliponario() async{
+    List<double> producaoPorAno = List();
+    List<int> anos = List();
+
+    List<Meliponario> listaMeliponarios = await getAllMeliponarios();
+  }
+
+  Future<List> getAnosColetas() async{
+    Database dbMeliponario = await db;
+    List listaAnosMap = await dbMeliponario.rawQuery("SELECT DISTINCT $anoColumn FROM $coletaTable");
+    List<int> listaAnos = List();
+    for(Map m in listaAnosMap){
+     listaAnos.add(m[anoColumn]);
+    }
+    return listaAnos;
   }
 
   Future<double> somarProducao(List<Caixa> listaCaixas) async{
@@ -200,6 +221,8 @@ class MeliponarioHelper {
       List<Coleta> listaColetas =  await getAllColetasPorCaixa(id);
       producaoTotal += somarColetas(listaColetas);
     }
+
+    return producaoTotal;
   }
 
   double somarColetas(List listaColetas){
@@ -210,7 +233,6 @@ class MeliponarioHelper {
   }
     return producaoTotal;
   }
-
 
   Future<List> getAllMeliponarios() async{//retorna uma lista de Meliiponarios
     Database dbMeliponario = await db;
@@ -412,6 +434,7 @@ class Coleta {
   double quantidade;
   String data;
   int idCaixa;
+  int ano;
 
 
   Coleta();
@@ -421,13 +444,15 @@ class Coleta {
     quantidade = map[quantidadeColumn];
     data = map[dataColumn];
     idCaixa = map[idCaixaColumn];
+    ano = map[anoColumn];
   }
 
   Map toMap(){
     Map<String, dynamic> map = {
       dataColumn: data,
       quantidadeColumn: quantidade,
-      idCaixaColumn: idCaixa
+      idCaixaColumn: idCaixa,
+      anoColumn: ano
     };
 
     if(id != null){
@@ -439,8 +464,9 @@ class Coleta {
 
   @override
   String toString() {
-    return 'Coleta{id: $id, quantidade: $quantidade, data: $data, idCaixa: $idCaixa}';
+    return 'Coleta{id: $id, quantidade: $quantidade, data: $data, idCaixa: $idCaixa, ano: $ano}';
   }
+
 }
 
 class Alimentacao {
