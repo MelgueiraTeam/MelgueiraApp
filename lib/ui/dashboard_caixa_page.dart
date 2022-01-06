@@ -15,9 +15,10 @@ class DashboardCaixasPage extends StatefulWidget {
 
 class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
 
-  List<charts.Series<Task, String>> _seriesPieData;
+  List<charts.Series<Task, String>> _seriesPieData = new List();
   List<charts.Series<ProducaoAnual, String>> _seriesList;
   List<charts.Series> _temperaturaUmidade;
+  charts.DatumLegend datumLegend;
   
   MeliponarioHelper _helper = new MeliponarioHelper();
 
@@ -26,9 +27,11 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
   void initState() {
     super.initState();
     _seriesPieData = List<charts.Series<Task, String>>();
+    _createLegend();
     _generatorData();
     _createSampleData();
     _temperaturaUmidade = _createDadosTemperaturaUmidade();
+
   }
 
   @override
@@ -75,6 +78,9 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                           animate: true,
                           animationDuration: Duration(seconds: 1),
                           behaviors: [
+                            datumLegend,
+                          ],
+                          /*behaviors: [
                             new charts.DatumLegend(
                                 outsideJustification: charts.OutsideJustification.endDrawArea,
                                 horizontalFirst: false,
@@ -84,7 +90,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                                     fontSize: 11
                                 )
                             )
-                          ],
+                          ],*/
                           defaultRenderer: new charts.ArcRendererConfig(
                               arcWidth: 100,
                               arcRendererDecorators: [
@@ -250,9 +256,23 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
           id: 'Daily task',
           labelAccessorFn: (Task row,_)=> '${row.porcentagem}',
 
+
         )
     );
   }
+
+  _createLegend() async{
+     datumLegend = await new charts.DatumLegend(
+        outsideJustification: charts.OutsideJustification.endDrawArea,
+        horizontalFirst: false,
+        desiredMaxRows: 2,
+        cellPadding: new EdgeInsets.only(right: 5.0, bottom: 5.0),
+        entryTextStyle: charts.TextStyleSpec(
+            fontSize: 11
+        )
+    );
+  }
+
 }
 
 class Dados{

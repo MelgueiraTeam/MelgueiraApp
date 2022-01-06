@@ -22,12 +22,14 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
 
   List<charts.Series<ProducaoAnual, String>> _seriesList;
   MeliponarioHelper _helper = new MeliponarioHelper();
+  charts.DatumLegend datumLegend;
 
 
   @override
   initState(){
     super.initState();
     _seriesPieData = List<charts.Series<Task, String>>();
+    _createLegend();
     _generatorData();
     _createSampleData();
   }
@@ -73,6 +75,9 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                           animate: true,
                           animationDuration: Duration(seconds: 1),
                           behaviors: [
+                            datumLegend,
+                          ],
+                          /*behaviors: [
                             new charts.DatumLegend(
                               outsideJustification: charts.OutsideJustification.endDrawArea,
                               horizontalFirst: false,
@@ -82,7 +87,7 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                                 fontSize: 11
                               )
                             )
-                          ],
+                          ],*/
                           defaultRenderer: new charts.ArcRendererConfig(
                             arcWidth: 100,
                             arcRendererDecorators: [
@@ -173,20 +178,35 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
       new Task("Poducão Total", (100.0 - porcentagem), Color(0xff555555))
     ];
 
-    _seriesPieData.add(
-        charts.Series(
-          data: pieData,
-          domainFn: (Task task,_)=> task.task,
-          measureFn: (Task task,_)=> task.porcentagem,
-          colorFn: (Task task,_)=> charts.ColorUtil.fromDartColor(task.colorval),
-          id: 'Daily task',
-          labelAccessorFn: (Task row,_)=> '${row.porcentagem}',
+    setState(() {
+      _seriesPieData.add(
+          charts.Series(
+            data: pieData,
+            domainFn: (Task task,_)=> task.task,
+            measureFn: (Task task,_)=> task.porcentagem,
+            colorFn: (Task task,_)=> charts.ColorUtil.fromDartColor(task.colorval),
+            id: 'Daily task',
+            labelAccessorFn: (Task row,_)=> '${row.porcentagem}',
 
+          )
+      );
+    });
+  }
+
+  _createLegend() async{
+    datumLegend = await new charts.DatumLegend(
+        outsideJustification: charts.OutsideJustification.endDrawArea,
+        horizontalFirst: false,
+        desiredMaxRows: 2,
+        cellPadding: new EdgeInsets.only(right: 5.0, bottom: 5.0),
+        entryTextStyle: charts.TextStyleSpec(
+            fontSize: 11
         )
     );
-  }//os dois últimos métodos não seguem o mesmo padrão pq eu estava aprendendo
+  }
+
 }
-//dá pra fazer tudo em uma classe mas eu estava aprendendo
+
 class Task{
   String task;
   double porcentagem;
