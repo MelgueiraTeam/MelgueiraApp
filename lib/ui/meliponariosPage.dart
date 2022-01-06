@@ -10,6 +10,8 @@ import 'package:prototipo_01/ui/dashboard_meliponario_page.dart';
 enum OrderOptions { orderaz, orderdc }
 
 class TelaMeliponarios extends StatefulWidget {
+  const TelaMeliponarios({Key key}) : super(key: key);
+
   @override
   TelaMeliponariosState createState() => TelaMeliponariosState();
 }
@@ -221,7 +223,7 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
   void _showDashboardMeliponarioPage(Meliponario meliponario) {
     Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => DashboardMelponariosPage(meliponario: meliponario,)));
+        MaterialPageRoute(builder: (context) => DashboardMelponariosPage(meliponario: meliponario)));
   }
 
   void _getAllMeliponarios() {

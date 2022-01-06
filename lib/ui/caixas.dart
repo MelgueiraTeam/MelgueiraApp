@@ -123,7 +123,9 @@ class _CaixasPageState extends State<CaixasPage> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.dashboard),
-                        onPressed: _showDashboardPage,
+                        onPressed: (){
+                          _showDashboardPage(caixas[index]);
+                        },
                       ),
                       IconButton(
                         icon: Icon(Icons.edit),
@@ -151,9 +153,9 @@ class _CaixasPageState extends State<CaixasPage> {
         context, MaterialPageRoute(builder: (context) => CadastroCaixaPage()));
   }
 
-  void _showDashboardPage() {
+  void _showDashboardPage(Caixa caixa) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => DashboardCaixasPage()));
+        MaterialPageRoute(builder: (context) => DashboardCaixasPage(caixa: caixa,)));
   }
 
   void _showCadastroCaixaPage({Caixa caixa, int idApiario}) async{

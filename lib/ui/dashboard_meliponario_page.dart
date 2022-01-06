@@ -3,6 +3,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
 
 class DashboardMelponariosPage extends StatefulWidget {
+  //const DashboardMelponariosPage({Key key}) : super(key: key);
 
   final Meliponario meliponario;
 
@@ -19,16 +20,16 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
 
   List<charts.Series<Task, String>> _seriesPieData;
 
-  List<charts.Series> _seriesList;
+  List<charts.Series<ProducaoAnual, String>> _seriesList;
   MeliponarioHelper _helper = new MeliponarioHelper();
 
 
   @override
-  void initState(){
+  initState(){
     super.initState();
     _seriesPieData = List<charts.Series<Task, String>>();
     _generatorData();
-    _seriesList = _createSampleData();
+    _createSampleData();
   }
 
   @override
@@ -104,7 +105,7 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                   child: Column(
                     children: [
                       Text(
-                        "Produção anual: Meliponario01",
+                        "Produção anual: " + widget.meliponario.nome,
                         style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10.0,),
@@ -131,26 +132,36 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
       ),
     );
   }
-   List<charts.Series<ProducaoAnual, String>> _createSampleData(){
+   Future<void>_createSampleData() async{
     List<int> anos = List();
+    List<double> producaoPorAno = List();
+    //anos.add(2022);
 
-    _helper.getAnosColetas().then((list) {
-      anos = list;
-    });
+
+    anos = await _helper.getAnosColetas();
+
+    producaoPorAno = await _helper.getProducaoAnualMeliponario(widget.meliponario.id);
+
+    List<ProducaoAnual> dados = new List();
+    for(int i = 0; i < anos.length; i++){
+      dados.add(new ProducaoAnual(anos[i].toString(), producaoPorAno[i]));
+     }
+    /*
     final data = [
-      new ProducaoAnual('2017', 3.9),
-      new ProducaoAnual('2018', 3.2),
-      new ProducaoAnual('2019', 3.5),
-      new ProducaoAnual('2020', 4.0),
-    ];
+      for(int i = 0; i < anos.length; i++){
+        new ProducaoAnual(anos[i].toString(), producaoPorAno[i]),
+      }
+    ];*/
 
-    return[ new charts.Series<ProducaoAnual,String>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        data: data,
-        domainFn: (ProducaoAnual ano, _) => ano.ano,
-        measureFn: (ProducaoAnual ano, _) =>ano.quantidade
-    )];
+    setState(() {
+      _seriesList = [ new charts.Series<ProducaoAnual,String>(
+          id: 'Sales',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          data: dados,
+          domainFn: (ProducaoAnual ano, _) => ano.ano,
+          measureFn: (ProducaoAnual ano, _) =>ano.quantidade
+      )];
+    });
   }
 
   _generatorData() async{

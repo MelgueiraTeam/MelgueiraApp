@@ -195,11 +195,69 @@ class MeliponarioHelper {
     return (100 * somaMeliponario)/somaTotal;
   }
 
-  Future<List> getProducaoAnualMeliponario() async{
+  Future<double> getPorcentagemProducaoCaixa(Caixa caixa, int idMeliponario) async{
+    //List<Meliponario> listaMeliponarios = await getAllMeliponarios();
+
+    double somaCaixa = 0;
+    double somaMeliponario = 0;
+
+    List<Caixa> listaCaixa = await getAllCaixasApiario(idMeliponario);
+    somaMeliponario = await somarProducao(listaCaixa);
+
+    somaCaixa = await somarProducao([caixa]);
+
+    return (100 * somaCaixa)/somaMeliponario;
+  }
+
+  Future<List> getProducaoAnualMeliponario(int idApiario)  async{
     List<double> producaoPorAno = List();
     List<int> anos = List();
 
-    List<Meliponario> listaMeliponarios = await getAllMeliponarios();
+    List<Caixa> listaCaixas = await getAllCaixasApiario(idApiario);
+    anos = await getAnosColetas();
+    List<Coleta> coletas;
+
+    for(int i = 0; i < listaCaixas.length; i++){
+      for(int j = 0; j < anos.length; j++){
+
+        coletas = await getColetasPorAnos(listaCaixas[i].id, anos[j]);
+        producaoPorAno.add(somarColetas(coletas));
+      }
+    }
+
+    return producaoPorAno;
+
+  }
+
+  Future<List> getProducaoAnualCaixa(int idCaixa)  async{
+    List<double> producaoPorAno = List();
+    List<int> anos = List();
+
+    //List<Caixa> listaCaixas = await getAllCaixasApiario(idApiario);
+    anos = await getAnosColetas();
+    List<Coleta> coletas;
+
+
+      for(int j = 0; j < anos.length; j++){
+
+        coletas = await getColetasPorAnos(idCaixa, anos[j]);
+        producaoPorAno.add(somarColetas(coletas));
+      }
+
+
+    return producaoPorAno;
+
+  }
+
+  Future<List> getColetasPorAnos(int idCaixa, int ano) async{
+    Database dbMeliponario = await db;
+    List listaColetasMap = await dbMeliponario.rawQuery("SELECT * FROM $coletaTable WHERE $idCaixaColumn = $idCaixa AND $anoColumn = $ano");
+    List<Coleta> listaColetas = List();
+    for(Map m in listaColetasMap){
+      listaColetas.add(Coleta.fromMap(m));
+    }
+
+    return listaColetas;
   }
 
   Future<List> getAnosColetas() async{
@@ -209,6 +267,11 @@ class MeliponarioHelper {
     for(Map m in listaAnosMap){
      listaAnos.add(m[anoColumn]);
     }
+
+    listaAnos.sort((a,b){
+      return a.compareTo(b);
+    });
+
     return listaAnos;
   }
 

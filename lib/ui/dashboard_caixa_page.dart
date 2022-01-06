@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:prototipo_01/helpers/meliponario_helper.dart';
 
 class DashboardCaixasPage extends StatefulWidget {
+  
+  Caixa caixa;
+
+
+  DashboardCaixasPage({this.caixa});
+
   @override
   _DashboardCaixasPageState createState() => _DashboardCaixasPageState();
 }
@@ -9,8 +16,10 @@ class DashboardCaixasPage extends StatefulWidget {
 class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
 
   List<charts.Series<Task, String>> _seriesPieData;
-                              List<charts.Series> _seriesList;
+  List<charts.Series<ProducaoAnual, String>> _seriesList;
   List<charts.Series> _temperaturaUmidade;
+  
+  MeliponarioHelper _helper = new MeliponarioHelper();
 
 
   @override
@@ -18,7 +27,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
     super.initState();
     _seriesPieData = List<charts.Series<Task, String>>();
     _generatorData();
-    _seriesList = _createSampleData();
+    _createSampleData();
     _temperaturaUmidade = _createDadosTemperaturaUmidade();
   }
 
@@ -44,7 +53,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
             ],
 
           ),
-          title: Text("Dashboard Caixa"),
+          title: Text("Dashboard " + widget.caixa.nome),
           centerTitle: true,
         ),
         body: TabBarView(
@@ -56,7 +65,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                   child: Column(
                     children: [
                       Text(
-                        "Produção: Caixa01",
+                        "Produção: " + widget.caixa.nome,
                         style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10.0,),
@@ -98,7 +107,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                   child: Column(
                     children: [
                       Text(
-                        "Produção anual: Caixa01",
+                        "Produção anual: " + widget.caixa.nome,
                         style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10.0,),
@@ -127,7 +136,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                   child: Column(
                     children: [
                       Text(
-                        "Temperatura e umidade: Caixa01",
+                        "Temperatura e umidade: " + widget.caixa.nome,
                         style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10.0,),
@@ -159,21 +168,34 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
     );
   }
 
-  static List<charts.Series<ProducaoAnual, String>> _createSampleData(){
-    final data = [
-      new ProducaoAnual('2017', 3.9),
-      new ProducaoAnual('2018', 3.2),
-      new ProducaoAnual('2019', 3.5),
-      new ProducaoAnual('2020', 4.0),
-    ];
+  Future<void>_createSampleData() async{
+    List<int> anos = List();
+    List<double> producaoPorAno = List();
+    
+    anos = await _helper.getAnosColetas();
 
-    return[ new charts.Series<ProducaoAnual, String>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        data: data,
-        domainFn: (ProducaoAnual ano, _) => ano.ano,
-        measureFn: (ProducaoAnual ano, _) =>ano.quantidade
-    )];
+    producaoPorAno = await _helper.getProducaoAnualCaixa(widget.caixa.id);
+
+    List<ProducaoAnual> dados = new List();
+    for(int i = 0; i < anos.length; i++){
+      dados.add(new ProducaoAnual(anos[i].toString(), producaoPorAno[i]));
+    }
+    /*
+    final data = [
+      for(int i = 0; i < anos.length; i++){
+        new ProducaoAnual(anos[i].toString(), producaoPorAno[i]),
+      }
+    ];*/
+
+    setState(() {
+      _seriesList = [ new charts.Series<ProducaoAnual,String>(
+          id: 'Sales',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          data: dados,
+          domainFn: (ProducaoAnual ano, _) => ano.ano,
+          measureFn: (ProducaoAnual ano, _) =>ano.quantidade
+      )];
+    });
   }
 
   static List<charts.Series<Dados, int>> _createDadosTemperaturaUmidade(){
@@ -210,10 +232,13 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
     ];
   }
 
-  _generatorData(){
+  _generatorData() async{
+    double porcentagem = await _helper.getPorcentagemProducaoCaixa(widget.caixa, widget.caixa.idMeliponario);
+    Caixa caixa = widget.caixa;
+
     var pieData=[
-      new Task("Produção Caixa01", 47.5, Color(0xffb74093)),
-      new Task("Poducão Total Meliponário01", (100 - 47.5), Color(0xff555555))
+      new Task("Produção " + caixa.nome, porcentagem, Color(0xffb74093)),
+      new Task("Poducão Total", (100.0 - porcentagem), Color(0xff555555))
     ];
 
     _seriesPieData.add(
@@ -227,9 +252,9 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
 
         )
     );
-  }//os dois últimos métodos não seguem o mesmo padrão pq eu estava aprendendo
+  }
 }
-//dá pra fazer tudo em uma classe mas eu estava aprendendo
+
 class Dados{
   double temperatura;
   double umidade;
