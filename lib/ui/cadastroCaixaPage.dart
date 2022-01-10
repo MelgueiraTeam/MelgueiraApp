@@ -48,7 +48,7 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Color.fromARGB(255, 255, 166, 78),
-            title: Text("Cadastrar Caixa"),
+            title: Text("Cadastrar caixa"),
             centerTitle: true,
           ),
           floatingActionButton: FloatingActionButton(

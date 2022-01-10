@@ -146,7 +146,8 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      cultivos[index].nome ?? "",
+                      _formatarTexto(cultivos[index].nome) ?? "",
+                      overflow: TextOverflow.fade,
                       //verificação inutil, já que, é impossivel salvar sem o nome
                       style: TextStyle(
                           fontSize: 20.0, fontWeight: FontWeight.bold),
@@ -263,4 +264,13 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
     });
   }
 
+  
+  String _formatarTexto(String texto){
+    if(texto.length > 15){
+      texto = texto.substring(0, 14);
+      texto += "...";
+    }
+
+    return texto;
+  }
 }

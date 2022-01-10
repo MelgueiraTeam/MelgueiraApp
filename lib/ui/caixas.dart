@@ -103,7 +103,7 @@ class _CaixasPageState extends State<CaixasPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        caixas[index].nome?? "",
+                        _formatarTexto(caixas[index].nome)?? "",
                         style: TextStyle(
                             fontSize: 20.0, fontWeight: FontWeight.bold),
                       ),
@@ -199,5 +199,14 @@ class _CaixasPageState extends State<CaixasPage> {
     setState(() {
 
     });
+  }
+
+  String _formatarTexto(String texto){
+    if(texto.length > 15){
+      texto = texto.substring(0, 14);
+      texto += "...";
+    }
+
+    return texto;
   }
 }
