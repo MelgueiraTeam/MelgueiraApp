@@ -32,6 +32,11 @@ dependencies:
   sqflite: 2.0.0+4
   flutter_launcher_icons: ^0.8.0
   image_picker: ^0.7.5+2
+  qr_flutter: ^4.0.0
+  path_provider: ^2.0.8
+  gallery_saver: ^2.0.0
+  share: ^2.0.4
+  qr_code_scanner: ^0.6.1
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +61,7 @@ flutter:
      - images/person.png
      - images/logo.png
      - images/icon.png
+     - images/logo_yakka.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

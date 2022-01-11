@@ -5,6 +5,7 @@ import 'package:prototipo_01/helpers/meliponario_helper.dart';
 import 'package:prototipo_01/ui/cadastroCaixaPage.dart';
 import 'package:prototipo_01/ui/dashboard_caixa_page.dart';
 import 'package:prototipo_01/ui/detalhesCaixaPage.dart';
+import 'package:prototipo_01/ui/leitor_qr_code.dart';
 
 enum OrderOptions { orderaz, orderdc }
 
@@ -54,6 +55,9 @@ class _CaixasPageState extends State<CaixasPage> {
             ],
             onSelected: _ordenarLista,
           ),
+          TextButton(onPressed: (){
+            _showLeitorQrPage();
+          }, child: Icon(Icons.qr_code))
         ],
       ),
       backgroundColor: Colors.white,
@@ -147,10 +151,13 @@ class _CaixasPageState extends State<CaixasPage> {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage(caixa: caixa,)));
   }
-  
-  void _showCadastroPage() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => CadastroCaixaPage()));
+
+
+
+
+  void _showLeitorQrPage() async{
+    String id = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LeitorPage()));
   }
 
   void _showDashboardPage(Caixa caixa) {

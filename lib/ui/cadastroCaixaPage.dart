@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
+import 'package:prototipo_01/ui/criacao_qr_code.dart';
 
 class CadastroCaixaPage extends StatefulWidget {
   final Caixa caixa;
@@ -122,6 +123,23 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
                       color: !_excluir ? Colors.red : Colors.grey,
                     ),
                   ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Container(
+                    height: 50.0,
+                    child: RaisedButton(
+                      onPressed: () {
+                        !_excluir ? _showQrCodePage(widget.caixa.id) : print("elaia");
+                      },
+                      child: Text(
+                        "Gerar qr_code",
+                        style: TextStyle(color: Colors.white, fontSize: 25.0),
+                      ),
+                      color: !_excluir ? Colors.red : Colors.grey,
+                    ),
+                  ),
                 )
 
                 /*Divider(),
@@ -219,4 +237,10 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
       return Future.value(true);
     }
   }
+
+  void _showQrCodePage(int idCaixa) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => QrCodeGenerator(idCaixa: idCaixa,)));
+  }
+
 }
