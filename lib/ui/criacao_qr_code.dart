@@ -12,8 +12,6 @@ import 'package:share/share.dart';
 
 class QrCodeGenerator extends StatefulWidget {
   int idCaixa;
-
-
   QrCodeGenerator({this.idCaixa});
 
   @override
@@ -22,7 +20,7 @@ class QrCodeGenerator extends StatefulWidget {
 
 class _QrCodeGeneratorState extends State<QrCodeGenerator> {
 
-  var qr;
+  CustomPaint qr;
 
   @override
   Widget build(BuildContext context) {
@@ -30,35 +28,26 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
     // ignore: lines_longer_than_80_chars
         widget.idCaixa.toString();
 
-    final qrFutureBuilder = FutureBuilder<ui.Image>(
-      future: _loadOverlayImage(),
-      builder: (ctx, snapshot) {
-        final size = 280.0;
-        if (!snapshot.hasData) {
-          return Container(width: size, height: size);
-        }
-        return CustomPaint(
-          size: Size.square(size),
-          painter: QrPainter(
-            data: message,
-            version: QrVersions.auto,
-            eyeStyle: const QrEyeStyle(
-              eyeShape: QrEyeShape.square,
-              color: Color(0xff000000),
-            ),
-            dataModuleStyle: const QrDataModuleStyle(
-              dataModuleShape: QrDataModuleShape.circle,
-              color: Color(0xff000000),
-            ),
-            // size: 320.0,
-            embeddedImage: snapshot.data,
-            embeddedImageStyle: QrEmbeddedImageStyle(
-              size: Size.square(60),
-            ),
-          ),
-        );
-      },
-    );
+    final qrFutureBuilder = CustomPaint(
+      size: Size.square(280.0),
+      painter: QrPainter(
+        color: Color(0xff000000),
+        emptyColor: Color(0xffffffff),
+        data: message,
+        version: QrVersions.auto,
+        eyeStyle: const QrEyeStyle(
+          eyeShape: QrEyeShape.square,
+          color: Color(0xff000000),
+        ),
+        dataModuleStyle: const QrDataModuleStyle(
+          dataModuleShape: QrDataModuleShape.circle,
+          color: Color(0xff000000),
+        ),
+        // size: 320.0,
+        embeddedImage: null,
+        embeddedImageStyle: null,
+        ),
+      );
 
     qr = qrFutureBuilder;
 
@@ -101,9 +90,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
   }
 
   _salvar() async{
-    String qr = "1";
 
-    String path = await createQrPicture(qr);
+    String path = await createQrPicture();
 
     await Share.shareFiles(
         [path],
@@ -112,9 +100,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
         text: 'Please scan me'
     );
 
-    String path2 = await createQrPicture(qr);
-
-    final success = await GallerySaver.saveImage(path2);
+    final success = await GallerySaver.saveImage(path);
 
     Scaffold.of(context).showSnackBar(SnackBar(
       content: success ? Text('Image saved to Gallery') : Text('Error saving image'),
@@ -122,29 +108,17 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
 
   }
 
-  Future<String> createQrPicture(String qr) async {
-    final qrValidationResult = QrValidator.validate(
-      data: qr,
-      version: QrVersions.auto,
-      errorCorrectionLevel: QrErrorCorrectLevel.L,
-    );
-
-    final qrCode = qrValidationResult.qrCode;
-
-    final painter = QrPainter.withQr(
-      qr: qrCode,
-      color: const Color(0xFF000000),
-      gapless: true,
-      embeddedImageStyle: null,
-      embeddedImage: null,
-    );
+  Future<String> createQrPicture() async {
 
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
     final ts = DateTime.now().millisecondsSinceEpoch.toString();
     String path = '$tempPath/$ts.png';
 
-    final picData = await painter.toImageData(2048, format: ui.ImageByteFormat.png);
+    QrPainter qrPainter = qr.painter;
+
+
+    final picData = await qrPainter.toImageData(2048.0, format: ui.ImageByteFormat.png );
     await writeToFile(picData, path);
     return path;
   }
@@ -155,4 +129,6 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
         buffer.asUint8List(data.offsetInBytes, data.lengthInBytes)
     );
   }
+
+
 }

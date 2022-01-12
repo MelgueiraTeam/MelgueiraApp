@@ -141,6 +141,22 @@ class MeliponarioHelper {
     }
   }
 
+  ///faz uma query no bd por meio do id da caixa
+  Future<Caixa>getCaixa(int id) async{
+    Database dbMeliponario = await db;
+    List<Map> maps = await dbMeliponario.query(caixaTable,
+      columns: [idColumn, nomeColumn, dataColumn, imageColumn],
+      where: "$idColumn = ?",
+      whereArgs: [id],
+    );
+
+    if(maps.length > 0){
+      return Caixa.fromMap(maps.first);
+    }else{
+      return null;
+    }
+  }
+
   ///deleta um apiário e todas as suas caixas pelo id
   Future<int> deleteMeliponario(int id) async{
     Database dbMeliponario = await db;

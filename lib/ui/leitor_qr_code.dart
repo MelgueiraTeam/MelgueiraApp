@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:prototipo_01/helpers/meliponario_helper.dart';
+import 'package:prototipo_01/ui/detalhesCaixaPage.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class LeitorPage extends StatefulWidget {
@@ -13,6 +15,9 @@ class LeitorPage extends StatefulWidget {
 }
 
 class _LeitorPageState extends State<LeitorPage> {
+  
+  MeliponarioHelper _helper = MeliponarioHelper();
+  
   Barcode result;
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -149,6 +154,7 @@ class _LeitorPageState extends State<LeitorPage> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
+        _showDetalhesCaixaPage();
         //Navigator.pop(context, result.code.toString());
       });
     });
@@ -168,4 +174,11 @@ class _LeitorPageState extends State<LeitorPage> {
     controller?.dispose();
     super.dispose();
   }
+
+  void _showDetalhesCaixaPage() async{
+    Caixa caixa = await _helper.getCaixa(int.parse(result.code));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage(caixa: caixa,)));
+  }
+  
 }
