@@ -37,6 +37,7 @@ dependencies:
   gallery_saver: ^2.0.0
   share: ^2.0.4
   qr_code_scanner: ^0.6.1
+  image: ^2.1.1
 
 dev_dependencies:
   flutter_test:
