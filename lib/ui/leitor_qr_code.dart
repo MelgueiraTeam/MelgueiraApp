@@ -21,7 +21,7 @@ class _LeitorPageState extends State<LeitorPage> {
   Barcode result;
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-
+  bool navegar = true;
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -32,6 +32,12 @@ class _LeitorPageState extends State<LeitorPage> {
       controller.pauseCamera();
     }
     controller.resumeCamera();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    navegar = true;
   }
 
   @override
@@ -154,8 +160,10 @@ class _LeitorPageState extends State<LeitorPage> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
-        _showDetalhesCaixaPage();
-        //Navigator.pop(context, result.code.toString());
+        if(navegar) {
+          navegar = false;
+          _showDetalhesCaixaPage();
+        }
       });
     });
   }
@@ -177,8 +185,9 @@ class _LeitorPageState extends State<LeitorPage> {
 
   void _showDetalhesCaixaPage() async{
     Caixa caixa = await _helper.getCaixa(int.parse(result.code));
-    Navigator.push(
+    await Navigator.push(
         context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage(caixa: caixa,)));
+    navegar = true;
   }
   
 }
