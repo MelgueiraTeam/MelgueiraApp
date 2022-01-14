@@ -125,7 +125,7 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
                   ),
                 ),
 
-                Padding(
+                /*Padding(
                   padding: EdgeInsets.only(top: 10.0),
                   child: Container(
                     height: 50.0,
@@ -140,7 +140,7 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
                       color: !_excluir ? Colors.red : Colors.grey,
                     ),
                   ),
-                )
+                )*/
 
                 /*Divider(),
             Text(

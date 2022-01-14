@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
 import 'package:prototipo_01/ui/coletas_page.dart';
+import 'package:prototipo_01/ui/criacao_qr_code.dart';
 
 import 'alimentacoes_page.dart';
+import 'cadastroCaixaPage.dart';
 
 class DetalhesCaixaPage extends StatefulWidget {
   Caixa caixa;
@@ -18,11 +20,12 @@ class DetalhesCaixaPage extends StatefulWidget {
 class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
 
   int _tabAtual = 1;
+  MeliponarioHelper helper = MeliponarioHelper();
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       initialIndex: 1,
       child: Scaffold(
         appBar: AppBar(
@@ -42,9 +45,18 @@ class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
               ),
               Tab(
                 text: "Alimentações",
+              ),
+              Tab(
+                text: "QR_code",
               )
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.edit),
+          onPressed: (){
+            _showCadastroCaixaPage(caixa: widget.caixa, idApiario: widget.caixa.idMeliponario);
+          },
         ),
         body: TabBarView(
           children: [
@@ -70,6 +82,7 @@ class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
               ],
             ),
             AlimentacaoPage(idCaixa: widget.caixa.id,),
+            QrCodeGenerator(idCaixa: widget.caixa.id,),
             /*
             Padding(
               padding: EdgeInsets.all(10.0),
@@ -156,4 +169,22 @@ class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
       ),
     );
   }
+
+  void _showCadastroCaixaPage({Caixa caixa, int idApiario}) async{
+    final recCaixa = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => CadastroCaixaPage(caixa: caixa, helper: helper, idApiario: idApiario,))
+    );
+
+    if(recCaixa != null){
+      if(caixa != null){
+        await helper.upadateCaixa(recCaixa);
+      }else{
+        await helper.saveCaixa(recCaixa);
+      }
+    }
+    setState(() {
+      widget.caixa = recCaixa;
+    });
+  }
+
 }

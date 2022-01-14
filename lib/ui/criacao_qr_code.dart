@@ -41,7 +41,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
           color: Color(0xff123456),
         ),
         dataModuleStyle: const QrDataModuleStyle(
-          dataModuleShape: QrDataModuleShape.circle,
+          dataModuleShape: QrDataModuleShape.square,
           //color: Color(0xff123456),
         ),
         // size: 320.0,
@@ -71,9 +71,25 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40)
                     .copyWith(bottom: 40),
-                child: RaisedButton(
-                  onPressed: _salvar,
-                  child: Text("Salvar"),
+                child: Row(
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.all(10.0),
+                      child: RaisedButton(
+                        onPressed: _compartilhar,
+                        child: Text("Compartilhar"),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: RaisedButton(
+                        onPressed: _salvar,
+                        child: Text("Salvar"),
+                      ),
+                    ),
+
+
+                  ],
                 ),
               ),
             ],
@@ -90,7 +106,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
     return completer.future;
   }
 
-  _salvar() async {
+  _compartilhar() async{
     String path = await createQrPicture();
 
     await Share.shareFiles(
@@ -99,12 +115,23 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator> {
         subject: 'My QR code',
         text: 'Please scan me'
     );
+  }
+
+  _salvar() async {
+    String path = await createQrPicture();
+
+    /*await Share.shareFiles(
+        [path],
+        mimeTypes: ["image/png"],
+        subject: 'My QR code',
+        text: 'Please scan me'
+    );*/
 
     final success = await GallerySaver.saveImage(path);
 
     Scaffold.of(context).showSnackBar(SnackBar(
-      content: success ? Text('Image saved to Gallery') : Text(
-          'Error saving image'),
+      content: success ? Text('Imagem salva na Galeria') : Text(
+          'Erro ao salvar imagem'),
     ));
   }
 
