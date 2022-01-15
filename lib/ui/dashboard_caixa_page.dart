@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
+import 'package:prototipo_01/ui/real_time.dart';
 
 class DashboardCaixasPage extends StatefulWidget {
   
@@ -135,7 +136,9 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                 ),
               ),
             ),
-            Padding(
+            GraficosRealTime(),
+
+            /*Padding(
               padding: EdgeInsets.all(10.0),
               child: Container(
                 child: Center(
@@ -167,7 +170,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                   ),
                 ),
               ),
-            ),
+            ),*/
           ],
         ),
       ),

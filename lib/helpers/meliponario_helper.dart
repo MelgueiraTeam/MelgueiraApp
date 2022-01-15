@@ -587,4 +587,3 @@ class Alimentacao {
     return 'Alimentacao{id: $id, quantidade: $quantidade, data: $data, tipo: $tipo, idCaixa: $idCaixa}';
   }
 }
-
