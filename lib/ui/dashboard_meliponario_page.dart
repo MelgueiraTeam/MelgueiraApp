@@ -20,16 +20,15 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
 
   List<charts.Series<Task, String>> _seriesPieData;
 
+  charts.DatumLegend datumLegend;
   List<charts.Series<ProducaoAnual, String>> _seriesList;
   MeliponarioHelper _helper = new MeliponarioHelper();
-  charts.DatumLegend datumLegend;
-
 
   @override
   initState(){
     super.initState();
-    _seriesPieData = List<charts.Series<Task, String>>();
     _createLegend();
+    _seriesPieData = List<charts.Series<Task, String>>();
     _generatorData();
     _createSampleData();
   }

@@ -7,6 +7,8 @@ import 'package:prototipo_01/ui/cadastroMeliponario.dart';
 import 'package:prototipo_01/ui/caixas.dart';
 import 'package:prototipo_01/ui/dashboard_meliponario_page.dart';
 
+import 'leitor_qr_code.dart';
+
 enum OrderOptions { orderaz, orderdc }
 
 class TelaMeliponarios extends StatefulWidget {
@@ -66,6 +68,9 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                     ],
                     onSelected: _ordenarLista,
                   ),
+                  TextButton(onPressed: (){
+                    _showLeitorQrPage();
+                  }, child: Icon(Icons.qr_code))
                 ],
                 bottom: TabBar(
                   tabs: [
@@ -87,7 +92,9 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                 child: Icon(Icons.add),
                 //backgroundColor: Color.fromARGB(255, 255, 166, 78),
               ),
-              body: TabBarView(
+              body: cultivos.length == 0? Center(
+                child: Text("Nenhum Registro"),
+              ) : TabBarView(
                 children: [
                   ListView.builder(
 
@@ -172,7 +179,7 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
 
                 children: [
                   IconButton(
-                    icon: Icon(Icons.dashboard),
+                    icon: Icon(Icons.bar_chart),
                     onPressed: (){
                       _showDashboardMeliponarioPage(cultivos[index]);
                     },
@@ -272,5 +279,10 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
     }
 
     return texto;
+  }
+
+  void _showLeitorQrPage() async{
+    String id = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LeitorPage()));
   }
 }

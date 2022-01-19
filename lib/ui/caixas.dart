@@ -38,19 +38,17 @@ class _CaixasPageState extends State<CaixasPage> {
         backgroundColor: Color.fromARGB(255, 255, 166, 78),
         centerTitle: true,
         actions: [
-          PopupMenuButton<OrderOptions>(
-            itemBuilder: (context) => <PopupMenuEntry<OrderOptions>>[
+          PopupMenuButton<OrderOptions>( //copiei descaradamente pq n sabia direito o que tava fazendo kk
+            itemBuilder: (context) =>
+            <PopupMenuEntry<OrderOptions>>[
               const PopupMenuItem<OrderOptions>(
                 child: Text("Ordenar alfabeticamente"),
+                value: OrderOptions.orderaz,
+
               ),
               const PopupMenuItem<OrderOptions>(
                 child: Text("Ordenar por data de criação"),
-              ),
-              const PopupMenuItem(
-                child: Text("Ordenar por temperatura(crescente)"),
-              ),
-              const PopupMenuItem(
-                child: Text("Ordenar por temperatura(decrescente)"),
+                value: OrderOptions.orderdc,
               ),
             ],
             onSelected: _ordenarLista,
@@ -68,7 +66,9 @@ class _CaixasPageState extends State<CaixasPage> {
         child: Icon(Icons.add),
         //backgroundColor: Color.fromARGB(255, 255, 166, 78),
       ),
-      body: ListView.builder(
+      body: caixas.length == 0? Center(
+        child: Text("Nenhum Registro"),
+      ) : ListView.builder(
         padding: EdgeInsets.all(10.0),
         itemCount: caixas.length,
         itemBuilder: (context, index){
@@ -82,7 +82,7 @@ class _CaixasPageState extends State<CaixasPage> {
   Widget _createCard(BuildContext context, int index) {
     return GestureDetector(
       onTap: (){
-        _showDetalhesCaixaPage(caixa: caixas[index]);
+        _showDetalhesCaixaPage2(caixa: caixas[index]);
       },
       child: Card(
         child: Padding(
@@ -126,7 +126,7 @@ class _CaixasPageState extends State<CaixasPage> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.dashboard),
+                        icon: Icon(Icons.bar_chart),
                         onPressed: (){
                           _showDashboardPage(caixas[index]);
                         },
@@ -168,6 +168,21 @@ class _CaixasPageState extends State<CaixasPage> {
   void _showCadastroCaixaPage({Caixa caixa, int idApiario}) async{
     final recCaixa = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => CadastroCaixaPage(caixa: caixa, helper: helper, idApiario: idApiario,))
+    );
+
+    if(recCaixa != null){
+      if(caixa != null){
+        await helper.upadateCaixa(recCaixa);
+      }else{
+        await helper.saveCaixa(recCaixa);
+      }
+    }
+    _getAllCaixas();
+  }
+
+  void _showDetalhesCaixaPage2({Caixa caixa, int idApiario}) async{
+    final recCaixa = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => DetalhesCaixaPage(caixa: caixa,))
     );
 
     if(recCaixa != null){

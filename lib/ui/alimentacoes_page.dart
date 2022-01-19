@@ -28,12 +28,14 @@ class _AlimentacaoPageState extends State<AlimentacaoPage> {
         onPressed: _showCadastroAliementacaoPage,
         child: Icon(Icons.add),
       ),
-      body: ListView.builder(
-        itemCount: alimentacoes.length,
-          itemBuilder: (context, index){
-            return _createCardAlimentacao(context, index);
-          }
-      ),
+      body: alimentacoes.length == 0 ? Center(
+        child: Text("Nenhuma alimentação registrada"),
+      ) : ListView.builder(
+    itemCount: alimentacoes.length,
+        itemBuilder: (context, index){
+      return _createCardAlimentacao(context, index);
+    }
+    ),
     );
   }
 

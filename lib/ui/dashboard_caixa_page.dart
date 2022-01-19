@@ -261,7 +261,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
 
 
         )
-    );
+      );
   }
 
   _createLegend() async{

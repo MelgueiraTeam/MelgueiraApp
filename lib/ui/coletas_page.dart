@@ -34,7 +34,9 @@ class _ColetasPageState extends State<ColetasPage> {
         onPressed: _showCadastroColetaPage,
         child: Icon(Icons.add),
       ),
-      body: ListView.builder(
+      body: coletas.length == 0? Center(
+        child: Text("Nenhum Registro"),
+      ) : ListView.builder(
         itemCount: coletas.length,
           itemBuilder: (context, index){
             return _createCardColeta(context, index);

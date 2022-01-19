@@ -52,34 +52,41 @@ class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.edit),
-          onPressed: (){
-            _showCadastroCaixaPage(caixa: widget.caixa, idApiario: widget.caixa.idMeliponario);
-          },
-        ),
         body: TabBarView(
           children: [
             ColetasPage(idCaixa: widget.caixa.id,),
-            Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Container(
-                    width: 160.0,
-                    height: 160.0,
-                    decoration: BoxDecoration(
-                      //shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: widget.caixa.image != null
-                                ? FileImage(File(widget.caixa.image))
-                                : AssetImage("images/person.png"))),
-                  ),
+            //pedir ajuda pra alinhar
+            Scaffold(
+              floatingActionButton: FloatingActionButton(
+                child: Icon(Icons.edit),
+                onPressed: (){
+                  _showCadastroCaixaPage(caixa: widget.caixa, idApiario: widget.caixa.idMeliponario);
+
+                },
+              ),
+              body: Center(
+                child: Column(
+
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Container(
+                        width: 160.0,
+                        height: 160.0,
+                        decoration: BoxDecoration(
+                          //shape: BoxShape.circle,
+                            image: DecorationImage(
+                                image: widget.caixa.image != null
+                                    ? FileImage(File(widget.caixa.image))
+                                    : AssetImage("images/person.png"))),
+                      ),
+                    ),
+                    Text(
+                        "Data de criação: " + widget.caixa.data
+                    )
+                  ],
                 ),
-                Text(
-                  "Data de criação: " + widget.caixa.data
-                )
-              ],
+              ),
             ),
             AlimentacaoPage(idCaixa: widget.caixa.id,),
             QrCodeGenerator(idCaixa: widget.caixa.id,),
@@ -176,14 +183,12 @@ class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
     );
 
     if(recCaixa != null){
-      if(caixa != null){
         await helper.upadateCaixa(recCaixa);
-      }else{
-        await helper.saveCaixa(recCaixa);
-      }
     }
-    setState(() {
-      widget.caixa = recCaixa;
+    setState((){
+      if(recCaixa != null){
+        widget.caixa = recCaixa;
+      }
     });
   }
 
