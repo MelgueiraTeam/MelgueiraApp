@@ -245,9 +245,13 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
     double porcentagem = await _helper.getPorcentagemProducaoCaixa(widget.caixa, widget.caixa.idMeliponario);
     Caixa caixa = widget.caixa;
 
+    porcentagem = double.parse(porcentagem.toStringAsFixed(2));
+    double resto = 100 - porcentagem;
+    resto = double.parse(resto.toStringAsFixed(2));
+
     var pieData=[
       new Task("Produção " + caixa.nome, porcentagem, Color(0xffb74093)),
-      new Task("Poducão Total", (100.0 - porcentagem), Color(0xff555555))
+      new Task("Poducão Total", resto, Color(0xff555555))
     ];
 
     _seriesPieData.add(

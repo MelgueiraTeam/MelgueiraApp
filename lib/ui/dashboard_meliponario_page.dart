@@ -18,19 +18,23 @@ class DashboardMelponariosPage extends StatefulWidget {
 class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
 
 
-  List<charts.Series<Task, String>> _seriesPieData;
+  List<charts.Series<Task, String>> _seriesPieData = <charts.Series<Task, String>>[];
 
   charts.DatumLegend datumLegend;
-  List<charts.Series<ProducaoAnual, String>> _seriesList;
+
+  List<charts.Series<ProducaoAnual, String>> _seriesList = <charts.Series<ProducaoAnual, String>>[];
   MeliponarioHelper _helper = new MeliponarioHelper();
 
   @override
   initState(){
     super.initState();
-    _createLegend();
-    _seriesPieData = List<charts.Series<Task, String>>();
-    _generatorData();
-    _createSampleData();
+    Future.delayed(Duration.zero, () async {
+      await _createLegend();
+      //_seriesPieData = List<charts.Series<Task, String>>();
+      await _generatorData();
+      await _createSampleData();
+    });
+
   }
 
   @override
@@ -172,9 +176,13 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
     double porcentagem = await _helper.getPorcentagemProducaoMeliponario(widget.meliponario.id);
     Meliponario meliponario = await _helper.getMeliponario(widget.meliponario.id);
 
+    porcentagem = double.parse(porcentagem.toStringAsFixed(2));
+    double resto = 100 - porcentagem;
+    resto = double.parse(resto.toStringAsFixed(2));
+
     var pieData=[
       new Task("Produção " + meliponario.nome, porcentagem, Color(0xffb74093)),
-      new Task("Poducão Total", (100.0 - porcentagem), Color(0xff555555))
+      new Task("Poducão Total", resto, Color(0xff555555))
     ];
 
     setState(() {

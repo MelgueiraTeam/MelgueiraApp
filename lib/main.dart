@@ -1,13 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:prototipo_01/ui/homePage.dart';
+import 'dart:ui';
 
-void main() {
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:prototipo_01/ui/homePage.dart';
+import 'package:prototipo_01/ui/notifications_service.dart';
+
+void main(){
+
+  Notificacoes a = Notificacoes();
+  a.init();
+
   runApp(MaterialApp(
     home: LogoApp(),
     debugShowCheckedModeBanner: false,
   ));
 }
-
 
 class LogoApp extends StatefulWidget {
   const LogoApp({Key key}) : super(key: key);
@@ -25,9 +32,21 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
+
+    void init() {
+      final AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('icon');
+
+      final InitializationSettings initializationSettings =
+      InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: null,
+          macOS: null);
+    }
+
     controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1),
+      duration: Duration(seconds: 2),
     );
 
     animation = Tween<double>(begin: 0.0, end: 300.0).animate(controller);
@@ -41,13 +60,14 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin{
 
     controller.addStatusListener((status){
       if(status == AnimationStatus.completed){
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context)=>HomePage())
-        );
+        Future.delayed(const Duration(seconds: 1, milliseconds: 500), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context)=>HomePage())
+          );
+        });
       }
     });
   }
-
 
   @override
   void dispose() {
@@ -57,23 +77,36 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        height: animation.value,
-        width: animation.value,
-        child: Container(
-          width: 80.0,
-          height: 80.0,
-          decoration: BoxDecoration(
-            //shape: BoxShape.circle,
-              image: DecorationImage(
-                  image: AssetImage("images/logo.png")
-              )
-          ),
-          //child: Text("Um aplicativo para gerenciar cultivos e sua produção de mel"),
+    return Scaffold(
+      backgroundColor: Colors.purple,
+      body: Center(
+
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: animation.value,
+              width: animation.value,
+              child: Container(
+                width: 80.0,
+                height: 80.0,
+                decoration: BoxDecoration(
+                  //shape: BoxShape.circle,
+                    image: DecorationImage(
+                        image: AssetImage("images/logo.png")
+                    )
+                ),
+              ),
+            ),
+            Text("Um aplicativo para gerenciar cultivos de \nabelha e sua produção de mel",
+              style: TextStyle(fontSize: 20 * controller.value, fontWeight: FontWeight.bold),
+            )
+          ],
         ),
       ),
     );
-  }
+
 }
 
+}

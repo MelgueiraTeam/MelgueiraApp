@@ -40,6 +40,7 @@ dependencies:
   image: ^3.1.1
   syncfusion_flutter_charts: ^19.4.41
   mysql1: ^0.19.2
+  flutter_local_notifications: ^9.2.0
 
 
 
