@@ -4,9 +4,7 @@ import 'package:prototipo_01/helpers/meliponario_helper.dart';
 import 'package:prototipo_01/ui/real_time.dart';
 
 class DashboardCaixasPage extends StatefulWidget {
-  
   Caixa caixa;
-
 
   DashboardCaixasPage({this.caixa});
 
@@ -15,14 +13,13 @@ class DashboardCaixasPage extends StatefulWidget {
 }
 
 class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
-
   List<charts.Series<Task, String>> _seriesPieData = new List();
   List<charts.Series<ProducaoAnual, String>> _seriesList;
   List<charts.Series> _temperaturaUmidade;
   charts.DatumLegend datumLegend;
-  
-  MeliponarioHelper _helper = new MeliponarioHelper();
 
+  MeliponarioHelper _helper = new MeliponarioHelper();
+  double porcentagem;
 
   @override
   void initState() {
@@ -33,6 +30,11 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
     _createSampleData();
     _temperaturaUmidade = _createDadosTemperaturaUmidade();
 
+    Future.delayed(Duration.zero, () async {
+      porcentagem = await _helper.getPorcentagemProducaoCaixa(
+          widget.caixa, widget.caixa.idMeliponario);
+    });
+    //print(_seriesList.length);
   }
 
   @override
@@ -55,87 +57,91 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                 icon: Icon(Icons.show_chart),
               ),
             ],
-
           ),
           title: Text("Dashboard " + widget.caixa.nome),
           centerTitle: true,
         ),
         body: TabBarView(
           children: [
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Container(
-                child: Center(
-                  child: Column(
-                    children: [
-                      Text(
-                        "Produção: " + widget.caixa.nome,
-                        style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 10.0,),
-                      Expanded(
-                        child: charts.PieChart(
-                          _seriesPieData,
-                          animate: true,
-                          animationDuration: Duration(seconds: 1),
-                          behaviors: [
-                            datumLegend,
-                          ],
-                          /*behaviors: [
-                            new charts.DatumLegend(
-                                outsideJustification: charts.OutsideJustification.endDrawArea,
-                                horizontalFirst: false,
-                                desiredMaxRows: 2,
-                                cellPadding: new EdgeInsets.only(right: 5.0, bottom: 5.0),
-                                entryTextStyle: charts.TextStyleSpec(
-                                    fontSize: 11
-                                )
+            porcentagem != null
+                ? Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Container(
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              "Produção: " + widget.caixa.nome,
+                              style: TextStyle(
+                                  fontSize: 24.0, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Expanded(
+                              child: charts.PieChart(
+                                _seriesPieData,
+                                animate: true,
+                                animationDuration: Duration(seconds: 1),
+                                behaviors: [
+                                  datumLegend,
+                                ],
+                                defaultRenderer: new charts.ArcRendererConfig(
+                                    arcWidth: 100,
+                                    arcRendererDecorators: [
+                                      new charts.ArcLabelDecorator(
+                                          labelPosition:
+                                              charts.ArcLabelPosition.inside)
+                                    ]
+                                ),
+                              ),
                             )
-                          ],*/
-                          defaultRenderer: new charts.ArcRendererConfig(
-                              arcWidth: 100,
-                              arcRendererDecorators: [
-                                new charts.ArcLabelDecorator(
-                                    labelPosition: charts.ArcLabelPosition.inside
-                                )
-                              ]
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Container(
-                child: Center(
-                  child: Column(
-                    children: [
-                      Text(
-                        "Produção anual: " + widget.caixa.nome,
-                        style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 10.0,),
-                      Expanded(
-                        child: charts.BarChart(
-                          _seriesList,
-                          animate: true,
-                          animationDuration: Duration(seconds: 1),
-                          behaviors: [
-                            new charts.ChartTitle('Mel(Em Kg)',
-                                behaviorPosition: charts.BehaviorPosition.start),
-                            new charts.ChartTitle('Anos',
-                                behaviorPosition: charts.BehaviorPosition.bottom),
                           ],
                         ),
-                      )
-                    ],
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text("Sem dados"),
                   ),
-                ),
-              ),
-            ),
+            _seriesList.length != 0
+                ? Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Container(
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              "Produção anual: " + widget.caixa.nome,
+                              style: TextStyle(
+                                  fontSize: 24.0, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Expanded(
+                              child: charts.BarChart(
+                                _seriesList,
+                                animate: true,
+                                animationDuration: Duration(seconds: 1),
+                                behaviors: [
+                                  new charts.ChartTitle('Mel(Em Kg)',
+                                      behaviorPosition:
+                                          charts.BehaviorPosition.start),
+                                  new charts.ChartTitle('Anos',
+                                      behaviorPosition:
+                                          charts.BehaviorPosition.bottom),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text("Sem dados"),
+                  ),
             GraficosRealTime(),
 
             /*Padding(
@@ -177,16 +183,16 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
     );
   }
 
-  Future<void>_createSampleData() async{
+  Future<void> _createSampleData() async {
     List<int> anos = List();
     List<double> producaoPorAno = List();
-    
+
     anos = await _helper.getAnosColetas();
 
     producaoPorAno = await _helper.getProducaoAnualCaixa(widget.caixa.id);
 
     List<ProducaoAnual> dados = new List();
-    for(int i = 0; i < anos.length; i++){
+    for (int i = 0; i < anos.length; i++) {
       dados.add(new ProducaoAnual(anos[i].toString(), producaoPorAno[i]));
     }
     /*
@@ -197,17 +203,18 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
     ];*/
 
     setState(() {
-      _seriesList = [ new charts.Series<ProducaoAnual,String>(
-          id: 'Sales',
-          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-          data: dados,
-          domainFn: (ProducaoAnual ano, _) => ano.ano,
-          measureFn: (ProducaoAnual ano, _) =>ano.quantidade
-      )];
+      _seriesList = [
+        new charts.Series<ProducaoAnual, String>(
+            id: 'Sales',
+            colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+            data: dados,
+            domainFn: (ProducaoAnual ano, _) => ano.ano,
+            measureFn: (ProducaoAnual ano, _) => ano.quantidade)
+      ];
     });
   }
 
-  static List<charts.Series<Dados, int>> _createDadosTemperaturaUmidade(){
+  static List<charts.Series<Dados, int>> _createDadosTemperaturaUmidade() {
     var temperatura = [
       new Dados(27, 19, 0),
       new Dados(25, 19, 1),
@@ -224,73 +231,67 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
       new Dados(27, 90, 4),
     ];
 
-    return [new charts.Series<Dados, int>(
-        id: 'temperatura',
-        colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
-        //areaColorFn: (_, __) => charts.MaterialPalette.red.shadeDefault.lighter,
-        data: temperatura,
-        domainFn: (Dados dados, _ ) => dados.segundo,
-        measureFn: (Dados dados, _ ) => dados.temperatura),
+    return [
+      new charts.Series<Dados, int>(
+          id: 'temperatura',
+          colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+          //areaColorFn: (_, __) => charts.MaterialPalette.red.shadeDefault.lighter,
+          data: temperatura,
+          domainFn: (Dados dados, _) => dados.segundo,
+          measureFn: (Dados dados, _) => dados.temperatura),
       new charts.Series<Dados, int>(
           id: 'umidade',
           colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
           //areaColorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault.lighter, não funcionou como eu queria ;-;
           data: umidade,
-          domainFn: (Dados dados, _ ) => dados.segundo,
-          measureFn: (Dados dados, _ ) => dados.umidade)
+          domainFn: (Dados dados, _) => dados.segundo,
+          measureFn: (Dados dados, _) => dados.umidade)
     ];
   }
 
-  _generatorData() async{
-    double porcentagem = await _helper.getPorcentagemProducaoCaixa(widget.caixa, widget.caixa.idMeliponario);
+  _generatorData() async {
+    double porcentagem = await _helper.getPorcentagemProducaoCaixa(
+        widget.caixa, widget.caixa.idMeliponario);
     Caixa caixa = widget.caixa;
 
     porcentagem = double.parse(porcentagem.toStringAsFixed(2));
     double resto = 100 - porcentagem;
     resto = double.parse(resto.toStringAsFixed(2));
 
-    var pieData=[
+    var pieData = [
       new Task("Produção " + caixa.nome, porcentagem, Color(0xffb74093)),
       new Task("Poducão Total", resto, Color(0xff555555))
     ];
 
-    _seriesPieData.add(
-        charts.Series(
-          data: pieData,
-          domainFn: (Task task,_)=> task.task,
-          measureFn: (Task task,_)=> task.porcentagem,
-          colorFn: (Task task,_)=> charts.ColorUtil.fromDartColor(task.colorval),
-          id: 'Daily task',
-          labelAccessorFn: (Task row,_)=> '${row.porcentagem}',
-
-
-        )
-      );
+    _seriesPieData.add(charts.Series(
+      data: pieData,
+      domainFn: (Task task, _) => task.task,
+      measureFn: (Task task, _) => task.porcentagem,
+      colorFn: (Task task, _) => charts.ColorUtil.fromDartColor(task.colorval),
+      id: 'Daily task',
+      labelAccessorFn: (Task row, _) => '${row.porcentagem}',
+    ));
   }
 
-  _createLegend() async{
-     datumLegend = await new charts.DatumLegend(
+  _createLegend() async {
+    datumLegend = await new charts.DatumLegend(
         outsideJustification: charts.OutsideJustification.endDrawArea,
         horizontalFirst: false,
         desiredMaxRows: 2,
         cellPadding: new EdgeInsets.only(right: 5.0, bottom: 5.0),
-        entryTextStyle: charts.TextStyleSpec(
-            fontSize: 11
-        )
-    );
+        entryTextStyle: charts.TextStyleSpec(fontSize: 11));
   }
-
 }
 
-class Dados{
+class Dados {
   double temperatura;
   double umidade;
-  int segundo;//xuncho
+  int segundo; //xuncho
 
   Dados(this.temperatura, this.umidade, this.segundo);
 }
 
-class Task{
+class Task {
   String task;
   double porcentagem;
   Color colorval;
@@ -298,7 +299,7 @@ class Task{
   Task(this.task, this.porcentagem, this.colorval);
 }
 
-class ProducaoAnual{
+class ProducaoAnual {
   String ano;
   double quantidade;
 

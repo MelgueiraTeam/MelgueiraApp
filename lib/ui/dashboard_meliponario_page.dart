@@ -7,34 +7,35 @@ class DashboardMelponariosPage extends StatefulWidget {
 
   final Meliponario meliponario;
 
-
-
   DashboardMelponariosPage({this.meliponario});
 
   @override
-  _DashboardMelponariosPageState createState() => _DashboardMelponariosPageState();
+  _DashboardMelponariosPageState createState() =>
+      _DashboardMelponariosPageState();
 }
 
 class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
-
-
-  List<charts.Series<Task, String>> _seriesPieData = <charts.Series<Task, String>>[];
+  List<charts.Series<Task, String>> _seriesPieData =
+      <charts.Series<Task, String>>[];
 
   charts.DatumLegend datumLegend;
 
-  List<charts.Series<ProducaoAnual, String>> _seriesList = <charts.Series<ProducaoAnual, String>>[];
+  List<charts.Series<ProducaoAnual, String>> _seriesList =
+      <charts.Series<ProducaoAnual, String>>[];
   MeliponarioHelper _helper = new MeliponarioHelper();
+  double porcentagem;
 
   @override
-  initState(){
+  initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
       await _createLegend();
       //_seriesPieData = List<charts.Series<Task, String>>();
       await _generatorData();
       await _createSampleData();
+      porcentagem = await _helper
+          .getPorcentagemProducaoMeliponario(widget.meliponario.id);
     });
-
   }
 
   @override
@@ -54,33 +55,36 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                 icon: Icon(Icons.insert_chart),
               ),
             ],
-
           ),
           title: Text("Dashboard Meliponário"),
           centerTitle: true,
         ),
         body: TabBarView(
           children: [
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Container(
-                child: Center(
-                  child: Column(
-                    children: [
-                      Text(
-                        "Produção: " + widget.meliponario.nome,
-                        style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 10.0,),
-                      Expanded(
-                        child: charts.PieChart(
-                          _seriesPieData,
-                          animate: true,
-                          animationDuration: Duration(seconds: 1),
-                          behaviors: [
-                            datumLegend,
-                          ],
-                          /*behaviors: [
+            porcentagem != null
+                ? Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Container(
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              "Produção: " + widget.meliponario.nome,
+                              style: TextStyle(
+                                  fontSize: 24.0, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Expanded(
+                              child: charts.PieChart(
+                                _seriesPieData,
+                                animate: true,
+                                animationDuration: Duration(seconds: 1),
+                                behaviors: [
+                                  datumLegend,
+                                ],
+                                /*behaviors: [
                             new charts.DatumLegend(
                               outsideJustification: charts.OutsideJustification.endDrawArea,
                               horizontalFirst: false,
@@ -91,22 +95,25 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                               )
                             )
                           ],*/
-                          defaultRenderer: new charts.ArcRendererConfig(
-                            arcWidth: 100,
-                            arcRendererDecorators: [
-                              new charts.ArcLabelDecorator(
-                                labelPosition: charts.ArcLabelPosition.inside
-                              )
-                            ]
-                          ),
+                                defaultRenderer: new charts.ArcRendererConfig(
+                                    arcWidth: 100,
+                                    arcRendererDecorators: [
+                                      new charts.ArcLabelDecorator(
+                                          labelPosition:
+                                              charts.ArcLabelPosition.inside)
+                                    ]),
+                              ),
+                            )
+                          ],
                         ),
-                      )
-                    ],
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text("Sem dados ;-;"),
                   ),
-                ),
-              ),
-            ),
-            Padding(
+            _seriesList.length != 0
+                ? Padding(
               padding: EdgeInsets.all(10.0),
               child: Container(
                 child: Center(
@@ -114,9 +121,12 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                     children: [
                       Text(
                         "Produção anual: " + widget.meliponario.nome,
-                        style: TextStyle( fontSize: 24.0, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 10.0,),
+                      SizedBox(
+                        height: 10.0,
+                      ),
                       Expanded(
                         child: charts.BarChart(
                           _seriesList,
@@ -124,9 +134,11 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                           animationDuration: Duration(seconds: 1),
                           behaviors: [
                             new charts.ChartTitle('Mel(Em Kg)',
-                                behaviorPosition: charts.BehaviorPosition.start),
+                                behaviorPosition:
+                                charts.BehaviorPosition.start),
                             new charts.ChartTitle('Anos',
-                                behaviorPosition: charts.BehaviorPosition.bottom),
+                                behaviorPosition:
+                                charts.BehaviorPosition.bottom),
                           ],
                         ),
                       )
@@ -134,26 +146,30 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
                   ),
                 ),
               ),
-            ),
+            )
+                : Center(
+                  child: Text("Sem dados"),
+            )
           ],
         ),
       ),
     );
   }
-   Future<void>_createSampleData() async{
+
+  Future<void> _createSampleData() async {
     List<int> anos = List();
     List<double> producaoPorAno = List();
     //anos.add(2022);
 
-
     anos = await _helper.getAnosColetas();
 
-    producaoPorAno = await _helper.getProducaoAnualMeliponario(widget.meliponario.id);
+    producaoPorAno =
+        await _helper.getProducaoAnualMeliponario(widget.meliponario.id);
 
     List<ProducaoAnual> dados = new List();
-    for(int i = 0; i < anos.length; i++){
+    for (int i = 0; i < anos.length; i++) {
       dados.add(new ProducaoAnual(anos[i].toString(), producaoPorAno[i]));
-     }
+    }
     /*
     final data = [
       for(int i = 0; i < anos.length; i++){
@@ -162,59 +178,59 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
     ];*/
 
     setState(() {
-      _seriesList = [ new charts.Series<ProducaoAnual,String>(
-          id: 'Sales',
-          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-          data: dados,
-          domainFn: (ProducaoAnual ano, _) => ano.ano,
-          measureFn: (ProducaoAnual ano, _) =>ano.quantidade
-      )];
+      _seriesList = [
+        new charts.Series<ProducaoAnual, String>(
+            id: 'Sales',
+            colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+            data: dados,
+            domainFn: (ProducaoAnual ano, _) => ano.ano,
+            measureFn: (ProducaoAnual ano, _) => ano.quantidade)
+      ];
     });
   }
 
-  _generatorData() async{
-    double porcentagem = await _helper.getPorcentagemProducaoMeliponario(widget.meliponario.id);
-    Meliponario meliponario = await _helper.getMeliponario(widget.meliponario.id);
+  _getPocentagem() async {
+    double porcentagem =
+        await _helper.getPorcentagemProducaoMeliponario(widget.meliponario.id);
+  }
+
+  _generatorData() async {
+    Meliponario meliponario =
+        await _helper.getMeliponario(widget.meliponario.id);
 
     porcentagem = double.parse(porcentagem.toStringAsFixed(2));
     double resto = 100 - porcentagem;
     resto = double.parse(resto.toStringAsFixed(2));
 
-    var pieData=[
+    var pieData = [
       new Task("Produção " + meliponario.nome, porcentagem, Color(0xffb74093)),
       new Task("Poducão Total", resto, Color(0xff555555))
     ];
 
     setState(() {
-      _seriesPieData.add(
-          charts.Series(
-            data: pieData,
-            domainFn: (Task task,_)=> task.task,
-            measureFn: (Task task,_)=> task.porcentagem,
-            colorFn: (Task task,_)=> charts.ColorUtil.fromDartColor(task.colorval),
-            id: 'Daily task',
-            labelAccessorFn: (Task row,_)=> '${row.porcentagem}',
-
-          )
-      );
+      _seriesPieData.add(charts.Series(
+        data: pieData,
+        domainFn: (Task task, _) => task.task,
+        measureFn: (Task task, _) => task.porcentagem,
+        colorFn: (Task task, _) =>
+            charts.ColorUtil.fromDartColor(task.colorval),
+        id: 'Daily task',
+        labelAccessorFn: (Task row, _) => '${row.porcentagem}',
+      ));
     });
   }
 
-  _createLegend() async{
+  _createLegend() async {
     datumLegend = await new charts.DatumLegend(
         outsideJustification: charts.OutsideJustification.endDrawArea,
         horizontalFirst: false,
         desiredMaxRows: 2,
         cellPadding: new EdgeInsets.only(right: 5.0, bottom: 5.0),
-        entryTextStyle: charts.TextStyleSpec(
-            fontSize: 11
-        )
-    );
+        entryTextStyle: charts.TextStyleSpec(fontSize: 11));
   }
-
 }
 
-class Task{
+class Task {
   String task;
   double porcentagem;
   Color colorval;
@@ -222,7 +238,7 @@ class Task{
   Task(this.task, this.porcentagem, this.colorval);
 }
 
-class ProducaoAnual{
+class ProducaoAnual {
   String ano;
   double quantidade;
 

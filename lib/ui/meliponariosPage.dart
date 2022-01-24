@@ -166,7 +166,8 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
                     ),
                     Text(
                       //"Descrição: " + meliponarios[index].descricao ?? "",
-                      cultivos[index].descricao ?? "",
+                      _formatarTexto(cultivos[index].descricao) ?? "",
+                      overflow: TextOverflow.fade,
                       style: TextStyle(fontSize: 16.0),
                     ),
                   ],
@@ -213,7 +214,7 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
         CadastroMeliponarioPage(meliponario: meliponario, helper: helper, cultivo: _tabAtual,))
     );
 
-    if (recMeliponario != null) {
+      if (recMeliponario != null) {
       if (meliponario != null) {
         await helper.updateMeliponario(recMeliponario);
       } else {
@@ -273,10 +274,14 @@ class TelaMeliponariosState extends State<TelaMeliponarios> {
 
   
   String _formatarTexto(String texto){
-    if(texto.length > 15){
-      texto = texto.substring(0, 14);
-      texto += "...";
+    if(texto == null){
+      texto = " ";
     }
+      if(texto.length > 15){
+        texto = texto.substring(0, 14);
+        texto += "...";
+      }
+
 
     return texto;
   }
