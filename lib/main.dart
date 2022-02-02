@@ -100,7 +100,7 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin{
               ),
             ),
             Text("Um aplicativo para gerenciar cultivos de \nabelha e sua produção de mel",
-              style: TextStyle(fontSize: 20 * controller.value, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 19 * controller.value, fontWeight: FontWeight.bold,),
             )
           ],
         ),

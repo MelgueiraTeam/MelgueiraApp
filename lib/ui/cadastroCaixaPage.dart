@@ -49,7 +49,7 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
 
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Color.fromARGB(255, 255, 166, 78),
+            backgroundColor: Color.fromARGB(255, 255, 166   , 78),
             title: Text("Cadastrar caixa"),
             centerTitle: true,
           ),
@@ -126,22 +126,7 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
                   ),
                 ),
 
-                Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Container(
-                    height: 50.0,
-                    child: RaisedButton(
-                      onPressed: () {
-                        _showQrConfigsConexao();
-                      },
-                      child: Text(
-                        "Configurar conexão",
-                        style: TextStyle(color: Colors.white, fontSize: 25.0),
-                      ),
-                      color: !_excluir ? Colors.red : Colors.grey,
-                    ),
-                  ),
-                )
+
 
                 /*Divider(),
             Text(

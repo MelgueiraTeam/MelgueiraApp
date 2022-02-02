@@ -7,6 +7,8 @@ import 'package:prototipo_01/ui/dashboard_caixa_page.dart';
 import 'package:prototipo_01/ui/detalhesCaixaPage.dart';
 import 'package:prototipo_01/ui/leitor_qr_code.dart';
 
+import 'entidades/config_json.dart';
+
 enum OrderOptions { orderaz, orderdc }
 
 class CaixasPage extends StatefulWidget {
@@ -128,6 +130,7 @@ class _CaixasPageState extends State<CaixasPage> {
                       IconButton(
                         icon: Icon(Icons.bar_chart),
                         onPressed: (){
+                          ConfigJson.idCaixa = caixas[index].id.toString();
                           _showDashboardPage(caixas[index]);
                         },
                       ),

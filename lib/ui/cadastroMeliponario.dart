@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
+
+import 'configuracoes.dart';
 //import 'package:image_picker/image_picker.dart';
 
 class CadastroMeliponarioPage extends StatefulWidget {
@@ -159,6 +161,22 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Container(
+                    height: 50.0,
+                    child: RaisedButton(
+                      onPressed: () {
+                        _showQrConfigsConexao();
+                      },
+                      child: Text(
+                        "Configurar conexão",
+                        style: TextStyle(color: Colors.white, fontSize: 25.0),
+                      ),
+                      color: !_excluir ? Colors.red : Colors.grey,
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -221,5 +239,10 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
     }
     dataFormatada += "$ano";
     return dataFormatada;
+  }
+
+  void _showQrConfigsConexao() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => Configuracoes()));
   }
 }

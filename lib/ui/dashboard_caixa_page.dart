@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:prototipo_01/helpers/meliponario_helper.dart';
-import 'package:prototipo_01/ui/real_time.dart';
+import 'package:prototipo_01/ui/grafico_tempo_real/melgueiraRealTime.dart';
 
 class DashboardCaixasPage extends StatefulWidget {
   Caixa caixa;
@@ -142,7 +142,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                 : Center(
                     child: Text("Sem dados"),
                   ),
-            GraficosRealTime(),
+            MelgueiraRealTime(widget.caixa.id),
 
             /*Padding(
               padding: EdgeInsets.all(10.0),
