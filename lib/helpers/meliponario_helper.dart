@@ -463,8 +463,10 @@ class MeliponarioHelper {
     return listaColetas;
   }
 
-  ///retorna uma lista de apiários ou meliponários
-  Future<List<Meliponario>> getMeliponariosPorCultivo(int cultivo) async {
+  ///retorna uma lista de meliponários
+  // 1 é meliponario
+  // 0 é apiario
+  Future<List<Meliponario>> getMeliponariosPorCultivo() async {
     Database? dbMeliponario;
     List listaMeliponariosMap;
     List<Meliponario> listaMeliponarios = <Meliponario>[];
@@ -472,19 +474,43 @@ class MeliponarioHelper {
     await db.then((value) async {
       dbMeliponario = value;
       await dbMeliponario!
-          .rawQuery("SELECT * FROM $meliponarioTable WHERE $cultivoColumn = $cultivo")
+          .rawQuery("SELECT * FROM $meliponarioTable WHERE $cultivoColumn = 1")
           .then((value) async {
         listaMeliponariosMap = value;
         for (Map m in listaMeliponariosMap) {
           listaMeliponarios.add(Meliponario.fromMap(m));
         }
-        debugPrint("resultados: ");
+        debugPrint("resultados Meliponarios: ");
         debugPrint(listaMeliponarios.length.toString());
       });
     });
 
     return listaMeliponarios;
   }
+
+  ///retorna uma lista de apiários
+  Future<List<Meliponario>> getApiariosPorCultivo() async {
+    Database? dbMeliponario;
+    List listaMeliponariosMap;
+    List<Meliponario> listaMeliponarios = <Meliponario>[];
+
+    await db.then((value) async {
+      dbMeliponario = value;
+      await dbMeliponario!
+          .rawQuery("SELECT * FROM $meliponarioTable WHERE $cultivoColumn = 0")
+          .then((value) async {
+        listaMeliponariosMap = value;
+        for (Map m in listaMeliponariosMap) {
+          listaMeliponarios.add(Meliponario.fromMap(m));
+        }
+        debugPrint("resultados Apiarios: ");
+        debugPrint(listaMeliponarios.length.toString());
+      });
+    });
+
+    return listaMeliponarios;
+  }
+
 
   ///retorna uma lista com todas as caixas
   Future<List> getAllCaixas() async {

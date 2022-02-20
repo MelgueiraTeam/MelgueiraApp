@@ -8,7 +8,7 @@ class CadastroCaixaPage extends StatefulWidget {
   final MeliponarioHelper? helper;
   final int? idApiario;
 
-   const CadastroCaixaPage({Key? key, this.caixa, this.helper, this.idApiario}) : super(key: key);
+  const CadastroCaixaPage({Key? key, this.caixa, this.helper, this.idApiario}) : super(key: key);
 
   @override
   _CadastroCaixaPageState createState() => _CadastroCaixaPageState();
@@ -22,7 +22,6 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
   bool _editado = false; //verefica se houve alteração nos dados do meliponário
 
   Caixa? _editedCaixa;
- // bool _excluir = false;
 
   @override
   void initState() {
@@ -32,7 +31,6 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
       _editedCaixa = Caixa();
       _editedCaixa!.data = gerarData();
       _editedCaixa!.idMeliponario = widget.idApiario;
-     // _excluir = true;
     } else {
       _editedCaixa = Caixa.fromMap(widget.caixa!.toMap());
 
@@ -43,10 +41,9 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: const Color.fromARGB(255, 255, 166   , 78),
+            backgroundColor: const Color.fromARGB(255, 255, 166, 78),
             title: const Text("Cadastrar caixa"),
             centerTitle: true,
           ),
@@ -73,7 +70,7 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
                       width: 160.0,
                       height: 160.0,
                       decoration: BoxDecoration(
-                        //shape: BoxShape.circle,
+                          //shape: BoxShape.circle,
                           image: DecorationImage(
                               image: _editedCaixa!.image != null
                                   ? FileImage(File(_editedCaixa!.image!))
@@ -94,8 +91,7 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
                     controller: _nomeController,
                     decoration: const InputDecoration(
                         labelText: "Nome Caixa",
-                        labelStyle:
-                        TextStyle(color: Color.fromARGB(255, 255, 166, 78)),
+                        labelStyle: TextStyle(color: Color.fromARGB(255, 255, 166, 78)),
                         border: OutlineInputBorder()),
                     onChanged: (text) {
                       _editado = true;
@@ -108,56 +104,20 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
                   child: SizedBox(
                     height: 50.0,
                     child: ElevatedButton(
-                      onPressed: () {
-                        //Implementar exclusão
-                        widget.helper!.deleteCaixa(widget.caixa!.id!);
-                        Navigator.pop(context);
-                        //Navigator.pop(context);
+                      onPressed: () async {
+                        if (widget.caixa != null) {
+                          await widget.helper!.deleteCaixa(widget.caixa!.id!).then((value) async {
+                            Navigator.pop(context);
+                          });
+                        }
                       },
                       child: const Text(
                         "Excluir",
                         style: TextStyle(color: Colors.white, fontSize: 25.0),
                       ),
-                      //color: !_excluir ? Colors.red : Colors.grey,
                     ),
                   ),
                 ),
-
-
-
-                /*Divider(),
-            Text(
-              "Sistema de termoregulação",
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                          labelText: "Temperatura mínima",
-                          labelStyle: TextStyle(color: Colors.deepOrange),
-                          border: OutlineInputBorder()),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                          labelText: "Temperatura máxima ",
-                          labelStyle: TextStyle(color: Colors.deepOrange),
-                          border: OutlineInputBorder()),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ),
-              ],
-            ),*/ //fora do escopo do meu pfc
               ],
             ),
           ),
@@ -171,9 +131,6 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
     int dia = data.day;
     int mes = data.month;
     int ano = data.year;
-
-    //eu sei que é xunxu
-    //no futuro usar plugins para formatar no padrão PT-BR
 
     if (dia < 10) {
       dataFormatada = "0$dia/";
@@ -220,15 +177,4 @@ class _CadastroCaixaPageState extends State<CadastroCaixaPage> {
       return Future.value(true);
     }
   }
-
-  // void _showQrCodePage(int idCaixa) {
-  //   Navigator.push(context,
-//       MaterialPageRoute(builder: (context) => QrCodeGenerator(idCaixa: idCaixa,)));
-// }
-
- // void _showQrConfigsConexao() {
-  //   Navigator.push(context,
-//      MaterialPageRoute(builder: (context) => const Configuracoes()));
-// }
-
 }

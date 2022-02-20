@@ -23,7 +23,6 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
   final _nomeFocus = FocusNode();
 
   bool _editado = false; //verefica se houve alteração nos dados do meliponário
-  //bool _excluir = false;
 
   Meliponario? _editedMeliponario;
 
@@ -35,7 +34,6 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
       _editedMeliponario = Meliponario();
       _editedMeliponario!.data = gerarData();
       _editedMeliponario!.cultivo = widget.cultivo;
-      //_excluir = true;
     } else {
       _editedMeliponario = Meliponario.fromMap(widget.meliponario!.toMap());
 
@@ -55,8 +53,10 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              //melhorar validação
-              if (_editedMeliponario!.nome != null && _editedMeliponario!.nome!.isNotEmpty) {
+              if (_editedMeliponario!.nome != null &&
+                  _editedMeliponario!.nome!.isNotEmpty &&
+                  _editedMeliponario!.descricao != null &&
+                  _editedMeliponario!.descricao!.isNotEmpty) {
                 Navigator.pop(context, _editedMeliponario);
               } else {
                 FocusScope.of(context).requestFocus(_nomeFocus);
@@ -120,37 +120,24 @@ class _CadastroMeliponarioPageState extends State<CadastroMeliponarioPage> {
                     _editedMeliponario!.descricao = text;
                   },
                 ),
-                /*CheckboxListTile(//famoso xunxo
-              title: Text("Sistema de termoregualção"),
-              value: false,
-              onChanged: (c){
-                print(c);
-              },
-            ),
-            CheckboxListTile(//famoso xunxo
-              title: Text("Pesquisa por QR code"),
-              value: false,
-              onChanged: (c){
-                print(c);
-              },
-            )*/
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: SizedBox(
                     height: 50.0,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(primary: Colors.red),
-                      onPressed: () {
+                      onPressed: () async {
                         //Implementar exclusão
-                        widget.helper!.deleteMeliponario(widget.meliponario!.id!);
-                        Navigator.pop(context);
-                        //Navigator.pop(context);
+                        if(widget.meliponario != null) {
+                          await widget.helper!.deleteMeliponario(widget.meliponario!.id!).then((value) async {
+                            Navigator.pop(context);
+                          });
+                        }
                       },
                       child: const Text(
                         "Excluir",
                         style: TextStyle(color: Colors.white, fontSize: 25.0),
                       ),
-                      //color: !_excluir ? Colors.red : Colors.grey,
                     ),
                   ),
                 ),

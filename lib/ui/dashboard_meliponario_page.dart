@@ -158,10 +158,6 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
     });
   }
 
-  // _getPocentagem() async {
-//    double porcentagem = await _helper.getPorcentagemProducaoMeliponario(widget.meliponario!.id!);
-  // }
-
   Future _generatorData() async {
     Meliponario? meliponario;
 
@@ -170,10 +166,16 @@ class _DashboardMelponariosPageState extends State<DashboardMelponariosPage> {
       porcentagem = double.parse(porcentagem!.toStringAsFixed(2));
       double resto = 100 - porcentagem!;
       resto = double.parse(resto.toStringAsFixed(2));
-      var pieData = [
-        Task("Produção " + meliponario!.nome!, porcentagem!, const Color(0xffb74093)),
-        Task("Poducão Total", resto, const Color(0xff555555))
-      ];
+
+      List<Task> pieData = resto.isNaN || porcentagem!.isNaN
+          ? <Task>[
+              Task("Produção " + meliponario!.nome!, 0, const Color(0xffb74093)),
+              Task("Poducão Total", 1, const Color(0xff555555))
+            ]
+          : <Task>[
+              Task("Produção " + meliponario!.nome!, porcentagem!, const Color(0xffb74093)),
+              Task("Poducão Total", resto, const Color(0xff555555))
+            ];
 
       setState(() {
         _seriesPieData.add(charts.Series(
