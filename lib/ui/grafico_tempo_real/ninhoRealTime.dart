@@ -7,9 +7,9 @@ import 'package:melgueira_app/ui/grafico_tempo_real/real_time.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class NinhoRealTime extends StatefulWidget {
-
+  int idCaixa;
   Future Function() fnAtualizaCarregamento;
-   NinhoRealTime(this.fnAtualizaCarregamento, {Key? key}) : super(key: key);
+  NinhoRealTime(this.fnAtualizaCarregamento, this.idCaixa, {Key? key}) : super(key: key);
 
   @override
   _NinhoRealTimeState createState() => _NinhoRealTimeState();
@@ -23,8 +23,6 @@ class _NinhoRealTimeState extends State<NinhoRealTime> {
 
   double temperaturaMelgueira = 0;
   double umidadeMelgueira = 0;
-
-  String idCaixa = '0';
 
   Future<String>? carregaDados;
 
@@ -53,14 +51,11 @@ class _NinhoRealTimeState extends State<NinhoRealTime> {
                       decoration: BoxDecoration(border: Border.all(color: Color(Colors.amber.value), width: 2)),
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        idCaixa + " ",
+                        widget.idCaixa.toString() + " ",
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       )),
                 ],
               )),
-
-
-
           Card(
               elevation: 10,
               color: Colors.blueAccent,
@@ -78,122 +73,120 @@ class _NinhoRealTimeState extends State<NinhoRealTime> {
                         width: double.infinity,
                         child: Card(
                             child: Column(children: [
-                              SizedBox(
-                                width: double.infinity,
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4),
-                                    child: Card(
-                                        elevation: 5,
-                                        child: Row(
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
-                                              child: Text("Temperatura:  "),
-                                            ),
-                                            Container(
-                                                margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(color: Color(Colors.red.value), width: 2)),
-                                                padding: const EdgeInsets.all(8),
-                                                child: Text(
-                                                  temperaturaNinho.toString() + " °C",
-                                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                                )),
-                                          ],
-                                        )),
+                          SizedBox(
+                            width: double.infinity,
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: Card(
+                                    elevation: 5,
+                                    child: Row(
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
+                                          child: Text("Temperatura:  "),
+                                        ),
+                                        Container(
+                                            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: Color(Colors.red.value), width: 2)),
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              temperaturaNinho.toString() + " °C",
+                                              style: const TextStyle(fontWeight: FontWeight.bold),
+                                            )),
+                                      ],
+                                    )),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Card(
+                                  elevation: 5,
+                                  child: Row(
+                                    children: [
+                                      const Padding(
+                                        padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
+                                        child: Text("Umidade:         "),
+                                      ),
+                                      Container(
+                                          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(color: Color(Colors.blue.value), width: 2)),
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            umidadeNinho.toString() + " UR",
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                          )),
+                                    ],
+                                  )),
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              Center(
+                                child: SfCartesianChart(
+                                  series: <LineSeries<BoxMelgueira, double>>[
+                                    LineSeries<BoxMelgueira, double>(
+                                      onRendererCreated: (ChartSeriesController controller) {
+                                        _chartSeriesController = controller;
+                                      },
+                                      dataSource: chartData,
+                                      color: const Color.fromRGBO(192, 108, 132, 1),
+                                      xValueMapper: (BoxMelgueira sales, _) => sales.time,
+                                      yValueMapper: (BoxMelgueira sales, _) => sales.temperaturaNinho,
+                                    )
+                                  ],
+                                  primaryXAxis: NumericAxis(
+                                    majorGridLines: const MajorGridLines(width: 0),
+                                    edgeLabelPlacement: EdgeLabelPlacement.shift,
+                                    interval: 1,
+                                    title: AxisTitle(text: 'Tempo (s)'),
+                                  ),
+                                  primaryYAxis: NumericAxis(
+                                    interval: 5,
+                                    majorGridLines: const MajorGridLines(width: 0),
+                                    edgeLabelPlacement: EdgeLabelPlacement.shift,
+                                    majorTickLines: const MajorTickLines(size: 0),
+                                    title: AxisTitle(text: 'Temperatura (°C)'),
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4),
-                                  child: Card(
-                                      elevation: 5,
-                                      child: Row(
-                                        children: [
-                                          const Padding(
-                                            padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
-                                            child: Text("Umidade:         "),
-                                          ),
-                                          Container(
-                                              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(color: Color(Colors.blue.value), width: 2)),
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                umidadeNinho.toString() + " UR",
-                                                style: const TextStyle(fontWeight: FontWeight.bold),
-                                              )),
-                                        ],
-                                      )),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  Center(
-                                    child: SfCartesianChart(
-                                      series: <LineSeries<BoxMelgueira, double>>[
-                                        LineSeries<BoxMelgueira, double>(
-                                          onRendererCreated: (ChartSeriesController controller) {
-                                            _chartSeriesController = controller;
-                                          },
-                                          dataSource: chartData,
-                                          color: const Color.fromRGBO(192, 108, 132, 1),
-                                          xValueMapper: (BoxMelgueira sales, _) => sales.time,
-                                          yValueMapper: (BoxMelgueira sales, _) => sales.temperaturaNinho,
-                                        )
-                                      ],
-                                      primaryXAxis: NumericAxis(
-                                        majorGridLines: const MajorGridLines(width: 0),
-                                        edgeLabelPlacement: EdgeLabelPlacement.shift,
-                                        interval: 1,
-                                        title: AxisTitle(text: 'Tempo (s)'),
-                                      ),
-                                      primaryYAxis: NumericAxis(
-                                        interval: 5,
-                                        majorGridLines: const MajorGridLines(width: 0),
-                                        edgeLabelPlacement: EdgeLabelPlacement.shift,
-                                        majorTickLines: const MajorTickLines(size: 0),
-                                        title: AxisTitle(text: 'Temperatura (°C)'),
-                                      ),
-                                    ),
+                              Center(
+                                child: SfCartesianChart(
+                                  series: <LineSeries<BoxMelgueira, double>>[
+                                    LineSeries<BoxMelgueira, double>(
+                                      onRendererCreated: (ChartSeriesController controller) {
+                                        _chartSeriesController = controller;
+                                      },
+                                      dataSource: chartData,
+                                      color: const Color.fromRGBO(192, 108, 132, 1),
+                                      xValueMapper: (BoxMelgueira sales, _) => sales.time,
+                                      yValueMapper: (BoxMelgueira sales, _) => sales.umidadeNinho,
+                                    )
+                                  ],
+                                  primaryXAxis: NumericAxis(
+                                    majorGridLines: const MajorGridLines(width: 0),
+                                    edgeLabelPlacement: EdgeLabelPlacement.shift,
+                                    interval: 1,
+                                    title: AxisTitle(text: 'Tempo (s)'),
                                   ),
-                                  Center(
-                                    child: SfCartesianChart(
-                                      series: <LineSeries<BoxMelgueira, double>>[
-                                        LineSeries<BoxMelgueira, double>(
-                                          onRendererCreated: (ChartSeriesController controller) {
-                                            _chartSeriesController = controller;
-                                          },
-                                          dataSource: chartData,
-                                          color: const Color.fromRGBO(192, 108, 132, 1),
-                                          xValueMapper: (BoxMelgueira sales, _) => sales.time,
-                                          yValueMapper: (BoxMelgueira sales, _) => sales.umidadeNinho,
-                                        )
-                                      ],
-                                      primaryXAxis: NumericAxis(
-                                        majorGridLines: const MajorGridLines(width: 0),
-                                        edgeLabelPlacement: EdgeLabelPlacement.shift,
-                                        interval: 1,
-                                        title: AxisTitle(text: 'Tempo (s)'),
-                                      ),
-                                      primaryYAxis: NumericAxis(
-                                        majorGridLines: const MajorGridLines(width: 0),
-                                        edgeLabelPlacement: EdgeLabelPlacement.shift,
-                                        majorTickLines: const MajorTickLines(size: 0),
-                                        title: AxisTitle(text: 'Umidade (°UR)'),
-                                      ),
-                                    ),
-                                  )
-                                ],
+                                  primaryYAxis: NumericAxis(
+                                    majorGridLines: const MajorGridLines(width: 0),
+                                    edgeLabelPlacement: EdgeLabelPlacement.shift,
+                                    majorTickLines: const MajorTickLines(size: 0),
+                                    title: AxisTitle(text: 'Umidade (°UR)'),
+                                  ),
+                                ),
                               )
-                            ])))
+                            ],
+                          )
+                        ])))
                   ]))),
-
-
         ],
       ),
     );
@@ -204,32 +197,22 @@ class _NinhoRealTimeState extends State<NinhoRealTime> {
     Future.delayed(Duration.zero, () async {
       GraficosRealTimeState.carregaDados = Future<String>.value('');
       await widget.fnAtualizaCarregamento();
-      await ConfigJson.readConfigJson(gerarConexaoBanco: true).then((value) async{
+      await ConfigJson.readConfigJson(gerarConexaoBanco: true).then((value) async {
 
-        await DataBase.getConexao().then((value) async {
-          if(value == false){
+          if (value == false) {
             GraficosRealTimeState.carregaDados = Future<String>.value('Erro');
             await widget.fnAtualizaCarregamento();
           } else {
             GraficosRealTimeState.carregaDados = Future<String>.value('Carregado');
             await widget.fnAtualizaCarregamento().then((value) {
               limpaGrafico();
-              if (ConfigJson.idCaixa != "") {
-
+              if (widget.idCaixa != "") {
                 _timerDisparaGetDadosTemperatura = Timer.periodic(const Duration(seconds: 1), updateDataSource);
               }
-
-
             });
-
-
           }
 
-
-        });
-
       });
-
     });
 
     super.initState();
@@ -243,14 +226,13 @@ class _NinhoRealTimeState extends State<NinhoRealTime> {
     time = 0;
     Future.delayed(Duration.zero, () async {
       await cancelaTimer().then((value) {
-        if(DataBase.conn != null) {
+        if (DataBase.conn != null) {
           DataBase.conn!.close();
         }
       });
     });
     super.dispose();
   }
-
 
   Future cancelaTimer() async {
     if (_timerDisparaGetDadosTemperatura != null) {
@@ -279,13 +261,7 @@ class _NinhoRealTimeState extends State<NinhoRealTime> {
         });
       }
     } else {
-
-      await DataBase.getDadosTemperatura(idCaixa: ConfigJson.idCaixa).then((value) async{
-
-
-
-
-
+      await DataBase.getDadosTemperatura(idCaixa: widget.idCaixa.toString()).then((value) async {
         objGraficoTemporario = value;
 
         for (var element in objGraficoTemporario) {
@@ -298,8 +274,6 @@ class _NinhoRealTimeState extends State<NinhoRealTime> {
 
           if (mounted) {
             setState(() {
-              idCaixa = ConfigJson.idCaixa;
-
               umidadeNinho = element.umidadeNinho;
               temperaturaNinho = element.temperaturaNinho;
 
@@ -320,9 +294,6 @@ class _NinhoRealTimeState extends State<NinhoRealTime> {
           }
         }
       });
-
-
-
     }
   }
 }

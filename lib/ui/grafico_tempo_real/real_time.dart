@@ -6,7 +6,8 @@ import 'package:melgueira_app/ui/grafico_tempo_real/melgueiraRealTime.dart';
 import 'package:melgueira_app/ui/grafico_tempo_real/ninhoRealTime.dart';
 
 class GraficosRealTime extends StatefulWidget {
-  const GraficosRealTime({Key? key}) : super(key: key);
+  int idCaixa;
+   GraficosRealTime(this.idCaixa, {Key? key}) : super(key: key);
 
   @override
   GraficosRealTimeState createState() => GraficosRealTimeState();
@@ -23,7 +24,7 @@ class GraficosRealTimeState extends State<GraficosRealTime> {
       length: 2,
       child: Scaffold(
           appBar: AppBar(
-
+            automaticallyImplyLeading: false,
             title: const Text("Graficos em Tempo Real"),
             centerTitle: true,
             backgroundColor: Colors.blue,
@@ -80,8 +81,8 @@ class GraficosRealTimeState extends State<GraficosRealTime> {
           ),
           body: TabBarView(
             children: [
-              MelgueiraRealTime(1),
-              NinhoRealTime(atualizaCarrregamento),
+              MelgueiraRealTime(atualizaCarrregamento, widget.idCaixa),
+              NinhoRealTime(atualizaCarrregamento, widget.idCaixa),
             ],
           ),
 

@@ -8,8 +8,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 class MelgueiraRealTime extends StatefulWidget {
   int idCaixa;
-
-  MelgueiraRealTime(this.idCaixa, {Key? key}) : super(key: key);
+  Future Function() fnAtualizaCarregamento;
+  MelgueiraRealTime(this.fnAtualizaCarregamento, this.idCaixa, {Key? key}) : super(key: key);
 
   @override
   _MelgueiraRealTimeState createState() => _MelgueiraRealTimeState();
@@ -24,7 +24,7 @@ class _MelgueiraRealTimeState extends State<MelgueiraRealTime> {
   double temperaturaMelgueira = 0;
   double umidadeMelgueira = 0;
 
-  String idCaixa = '0';
+
 
   static List<BoxMelgueira> chartData = <BoxMelgueira>[];
   static List<BoxMelgueira> objGraficoTemporario = <BoxMelgueira>[];
@@ -33,49 +33,83 @@ class _MelgueiraRealTimeState extends State<MelgueiraRealTime> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Card(
-              elevation: 5,
-              child: Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
-                    child: Text("Codigo Caixa:  "),
-                  ),
-                  Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      decoration: BoxDecoration(border: Border.all(color: Color(Colors.amber.value), width: 2)),
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        idCaixa + " ",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      )),
-                ],
-              )),
-          Card(
-              elevation: 10,
-              color: Colors.blueAccent,
-              child: SizedBox(
-                  width: double.infinity,
-                  child: Column(children: [
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed("/graficosTempoPassado");
+        },
+        child: const Icon(Icons.history),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Card(
+                elevation: 5,
+                child: Row(
+                  children: [
                     const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "Melgueira",
-                        style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
-                      ),
+                      padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
+                      child: Text("Codigo Caixa:  "),
                     ),
-                    SizedBox(
-                        width: double.infinity,
-                        child: Card(
-                            child: Column(children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: SizedBox(
+                    Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        decoration: BoxDecoration(border: Border.all(color: Color(Colors.amber.value), width: 2)),
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          widget.idCaixa.toString() + " ",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                  ],
+                )),
+            Card(
+                elevation: 10,
+                color: Colors.blueAccent,
+                child: SizedBox(
+                    width: double.infinity,
+                    child: Column(children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          "Melgueira",
+                          style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                          width: double.infinity,
+                          child: Card(
+                              child: Column(children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Card(
+                                      elevation: 5,
+                                      child: Row(
+                                        children: [
+                                          const Padding(
+                                            padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
+                                            child: Text("Temperatura:  "),
+                                          ),
+                                          Container(
+                                              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(color: Color(Colors.red.value), width: 2)),
+                                              padding: const EdgeInsets.all(8),
+                                              child: Text(
+                                                temperaturaMelgueira.toString() + " °C",
+                                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                              )),
+                                        ],
+                                      )),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
                               width: double.infinity,
                               child: Padding(
                                 padding: const EdgeInsets.all(4),
@@ -85,109 +119,84 @@ class _MelgueiraRealTimeState extends State<MelgueiraRealTime> {
                                       children: [
                                         const Padding(
                                           padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
-                                          child: Text("Temperatura:  "),
+                                          child: Text("Umidade:         "),
                                         ),
                                         Container(
                                             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                             decoration: BoxDecoration(
-                                                border: Border.all(color: Color(Colors.red.value), width: 2)),
+                                                border: Border.all(color: Color(Colors.blue.value), width: 2)),
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              temperaturaMelgueira.toString() + " °C",
+                                              umidadeMelgueira.toString() + " UR",
                                               style: const TextStyle(fontWeight: FontWeight.bold),
                                             )),
                                       ],
                                     )),
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.all(4),
-                              child: Card(
-                                  elevation: 5,
-                                  child: Row(
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.fromLTRB(10, 00, 10, 000),
-                                        child: Text("Umidade:         "),
-                                      ),
-                                      Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(color: Color(Colors.blue.value), width: 2)),
-                                          padding: const EdgeInsets.all(8),
-                                          child: Text(
-                                            umidadeMelgueira.toString() + " UR",
-                                            style: const TextStyle(fontWeight: FontWeight.bold),
-                                          )),
+                            Column(
+                              children: [
+                                Center(
+                                  child: SfCartesianChart(
+                                    series: <LineSeries<BoxMelgueira, double>>[
+                                      LineSeries<BoxMelgueira, double>(
+                                        onRendererCreated: (ChartSeriesController controller) {
+                                          _chartSeriesController = controller;
+                                        },
+                                        dataSource: chartData,
+                                        color: const Color.fromRGBO(192, 108, 132, 1),
+                                        xValueMapper: (BoxMelgueira sales, _) => sales.time,
+                                        yValueMapper: (BoxMelgueira sales, _) => sales.temperaturaMelgueira,
+                                      )
                                     ],
-                                  )),
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              Center(
-                                child: SfCartesianChart(
-                                  series: <LineSeries<BoxMelgueira, double>>[
-                                    LineSeries<BoxMelgueira, double>(
-                                      onRendererCreated: (ChartSeriesController controller) {
-                                        _chartSeriesController = controller;
-                                      },
-                                      dataSource: chartData,
-                                      color: const Color.fromRGBO(192, 108, 132, 1),
-                                      xValueMapper: (BoxMelgueira sales, _) => sales.time,
-                                      yValueMapper: (BoxMelgueira sales, _) => sales.temperaturaMelgueira,
-                                    )
-                                  ],
-                                  primaryXAxis: NumericAxis(
-                                    majorGridLines: const MajorGridLines(width: 0),
-                                    edgeLabelPlacement: EdgeLabelPlacement.shift,
-                                    interval: 1,
-                                    title: AxisTitle(text: 'Tempo (s)'),
-                                  ),
-                                  primaryYAxis: NumericAxis(
-                                    interval: 5,
-                                    majorGridLines: const MajorGridLines(width: 0),
-                                    edgeLabelPlacement: EdgeLabelPlacement.shift,
-                                    majorTickLines: const MajorTickLines(size: 0),
-                                    title: AxisTitle(text: 'Temperatura (°C)'),
+                                    primaryXAxis: NumericAxis(
+                                      majorGridLines: const MajorGridLines(width: 0),
+                                      edgeLabelPlacement: EdgeLabelPlacement.shift,
+                                      interval: 1,
+                                      title: AxisTitle(text: 'Tempo (s)'),
+                                    ),
+                                    primaryYAxis: NumericAxis(
+                                      interval: 5,
+                                      majorGridLines: const MajorGridLines(width: 0),
+                                      edgeLabelPlacement: EdgeLabelPlacement.shift,
+                                      majorTickLines: const MajorTickLines(size: 0),
+                                      title: AxisTitle(text: 'Temperatura (°C)'),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Center(
-                                child: SfCartesianChart(
-                                  series: <LineSeries<BoxMelgueira, double>>[
-                                    LineSeries<BoxMelgueira, double>(
-                                      onRendererCreated: (ChartSeriesController controller) {
-                                        _chartSeriesController = controller;
-                                      },
-                                      dataSource: chartData,
-                                      color: const Color.fromRGBO(192, 108, 132, 1),
-                                      xValueMapper: (BoxMelgueira sales, _) => sales.time,
-                                      yValueMapper: (BoxMelgueira sales, _) => sales.umidadeMelgueira,
-                                    )
-                                  ],
-                                  primaryXAxis: NumericAxis(
-                                    majorGridLines: const MajorGridLines(width: 0),
-                                    edgeLabelPlacement: EdgeLabelPlacement.shift,
-                                    interval: 1,
-                                    title: AxisTitle(text: 'Tempo (s)'),
+                                Center(
+                                  child: SfCartesianChart(
+                                    series: <LineSeries<BoxMelgueira, double>>[
+                                      LineSeries<BoxMelgueira, double>(
+                                        onRendererCreated: (ChartSeriesController controller) {
+                                          _chartSeriesController = controller;
+                                        },
+                                        dataSource: chartData,
+                                        color: const Color.fromRGBO(192, 108, 132, 1),
+                                        xValueMapper: (BoxMelgueira sales, _) => sales.time,
+                                        yValueMapper: (BoxMelgueira sales, _) => sales.umidadeMelgueira,
+                                      )
+                                    ],
+                                    primaryXAxis: NumericAxis(
+                                      majorGridLines: const MajorGridLines(width: 0),
+                                      edgeLabelPlacement: EdgeLabelPlacement.shift,
+                                      interval: 1,
+                                      title: AxisTitle(text: 'Tempo (s)'),
+                                    ),
+                                    primaryYAxis: NumericAxis(
+                                      majorGridLines: const MajorGridLines(width: 0),
+                                      edgeLabelPlacement: EdgeLabelPlacement.shift,
+                                      majorTickLines: const MajorTickLines(size: 0),
+                                      title: AxisTitle(text: 'Umidade (°UR)'),
+                                    ),
                                   ),
-                                  primaryYAxis: NumericAxis(
-                                    majorGridLines: const MajorGridLines(width: 0),
-                                    edgeLabelPlacement: EdgeLabelPlacement.shift,
-                                    majorTickLines: const MajorTickLines(size: 0),
-                                    title: AxisTitle(text: 'Umidade (°UR)'),
-                                  ),
-                                ),
-                              )
-                            ],
-                          )
-                        ])))
-                  ]))),
-        ],
+                                )
+                              ],
+                            )
+                          ])))
+                    ]))),
+          ],
+        ),
       ),
     );
   }
@@ -196,17 +205,17 @@ class _MelgueiraRealTimeState extends State<MelgueiraRealTime> {
   initState() {
     Future.delayed(Duration.zero, () async {
       GraficosRealTimeState.carregaDados = Future<String>.value('');
-
+      await widget.fnAtualizaCarregamento();
       await ConfigJson.readConfigJson(gerarConexaoBanco: true).then((value) async{
-      await DataBase.getConexao().then((value) async {
-        if(value == null || value == false){
-          GraficosRealTimeState.carregaDados = Future<String>.value('Erro');
 
+        if(value == false){
+          GraficosRealTimeState.carregaDados = Future<String>.value('Erro');
+          await widget.fnAtualizaCarregamento();
         } else {
           GraficosRealTimeState.carregaDados = Future<String>.value('Carregado');
-
+          await widget.fnAtualizaCarregamento().then((value) async {
             limpaGrafico();
-            if (ConfigJson.idCaixa != "") {
+            if (widget.idCaixa.toString() != "") {
 
               _timerDisparaGetDadosTemperatura = Timer.periodic(const Duration(seconds: 1), updateDataSource);
             }
@@ -214,11 +223,11 @@ class _MelgueiraRealTimeState extends State<MelgueiraRealTime> {
 
 
 
-
+          });
         }
 
 
-      });
+
 
 
       });
@@ -272,7 +281,7 @@ class _MelgueiraRealTimeState extends State<MelgueiraRealTime> {
       }
     } else {
 
-        await DataBase.getDadosTemperatura(idCaixa: ConfigJson.idCaixa).then((value) async{
+        await DataBase.getDadosTemperatura(idCaixa: widget.idCaixa.toString()).then((value) async{
 
 
 
@@ -290,7 +299,7 @@ class _MelgueiraRealTimeState extends State<MelgueiraRealTime> {
 
             if (mounted) {
               setState(() {
-                idCaixa = ConfigJson.idCaixa;
+
 
                 umidadeNinho = element.umidadeNinho;
                 temperaturaNinho = element.temperaturaNinho;

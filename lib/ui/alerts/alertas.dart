@@ -7,7 +7,8 @@ import 'package:melgueira_app/ui/alerts/alert_list.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 class Alertas extends StatefulWidget {
-  const Alertas({Key? key}) : super(key: key);
+  int idCaixa;
+   Alertas(this.idCaixa, {Key? key}) : super(key: key);
 
   @override
   AlertasState createState() => AlertasState();
@@ -136,7 +137,7 @@ class AlertasState extends State<Alertas> {
                     color: Colors.white,
                     child: ListView(
                       children: [
-                        AlertsForm(carregaAlertas, codigoMaisAlto, null, desativaInteracaoTela, ativaInteracaoTela, geraNotificacao, fnGerarNotificacao),
+                        AlertsForm(carregaAlertas, codigoMaisAlto, null, desativaInteracaoTela, ativaInteracaoTela, geraNotificacao, fnGerarNotificacao, widget.idCaixa),
                       ],
                     ),
                   ));
@@ -151,7 +152,7 @@ class AlertasState extends State<Alertas> {
         tz.initializeTimeZones();
         carregaDados = Future<String>.delayed(Duration.zero, () async {
           await ConfigJson.readConfigJson(gerarConexaoBanco: true).then((estadoConexao) async {
-            await DataBase.getAlertas(ConfigJson.idCaixa).then((retornoGetAlerta) async {
+            await DataBase.getAlertas(widget.idCaixa.toString()).then((retornoGetAlerta) async {
               listaAlertas = retornoGetAlerta;
 
               await DataBase.getMaxIdAlerts().then((value) {
@@ -183,7 +184,7 @@ class AlertasState extends State<Alertas> {
                     color: Colors.white,
                     child: ListView(
                       children: [
-                        AlertsForm(carregaAlertas, codigoMaisAlto, alerta, desativaInteracaoTela, ativaInteracaoTela, geraNotificacao, fnGerarNotificacao),
+                        AlertsForm(carregaAlertas, codigoMaisAlto, alerta, desativaInteracaoTela, ativaInteracaoTela, geraNotificacao, fnGerarNotificacao, widget.idCaixa),
                       ],
                     ),
                   ));
@@ -280,7 +281,7 @@ class AlertasState extends State<Alertas> {
   }
 
   Future carregaAlertas() async {
-    await DataBase.getAlertas(ConfigJson.idCaixa).then((alertas) async {
+    await DataBase.getAlertas(widget.idCaixa.toString()).then((alertas) async {
       AlertasState.listaAlertas = alertas;
       await DataBase.getMaxIdAlerts().then((value) {
         codigoMaisAlto = value;

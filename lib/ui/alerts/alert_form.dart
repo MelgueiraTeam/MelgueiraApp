@@ -15,10 +15,10 @@ class AlertsForm extends StatefulWidget {
   final Future Function(Alerta? alertaObj) fnGeraNotificacao;
   final int codigoMaisAlto;
   Alerta? alertaObj;
-
+  int idCaixa;
   AlertsForm(this.fnCarregaAlertas, this.codigoMaisAlto, this.alertaObj, this.fnDesativaInteracaoTela,
       this.fnAtivaInteracaoTela, this.fnGeraNotificacao, this.fnGerarNotificacao,
-      {Key? key})
+     this.idCaixa, {Key? key})
       : super(key: key);
 
   @override
@@ -172,7 +172,7 @@ class _AlertsFormState extends State<AlertsForm> {
                   Service().showNotification(
                       1,
                       "Alerta MelgueiraBox",
-                      "A caixa do id = ${ConfigJson.idCaixa}, excedeu o intervalo de temperatura definido no alerta de código: " +
+                      "A caixa do id = ${widget.idCaixa}, excedeu o intervalo de temperatura definido no alerta de código: " +
                           widget.alertaObj!.id.toString() +
                           " !");
 
@@ -207,7 +207,7 @@ class _AlertsFormState extends State<AlertsForm> {
     } else {
       Navigator.of(context).pop();
       if (widget.alertaObj == null) {
-        await DataBase.saveAlerta(tecDescricao.text, double.parse(tecTempMin.text), double.parse(tecTempMax.text), ConfigJson.idCaixa)
+        await DataBase.saveAlerta(tecDescricao.text, double.parse(tecTempMin.text), double.parse(tecTempMax.text), widget.idCaixa.toString())
             .then((value) async {
           await widget.fnCarregaAlertas();
         });

@@ -98,7 +98,7 @@ class _DetalhesCaixaPageState extends State<DetalhesCaixaPage> {
             QrCodeGenerator(
               idCaixa: widget.caixa!.id!,
             ),
-            Alertas()
+            Alertas( widget.caixa!.id!)
           ],
         ),
 

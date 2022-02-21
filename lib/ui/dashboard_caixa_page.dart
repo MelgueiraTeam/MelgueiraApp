@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:melgueira_app/helpers/meliponario_helper.dart';
-import 'package:melgueira_app/ui/grafico_tempo_real/melgueiraRealTime.dart';
+import 'package:melgueira_app/ui/grafico_tempo_real/real_time.dart';
 
 class DashboardCaixasPage extends StatefulWidget {
   Caixa? caixa;
@@ -41,6 +41,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 255, 166, 78),
           bottom: const TabBar(
@@ -59,6 +60,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
           ),
           title: Text("Dashboard " + widget.caixa!.nome!),
           centerTitle: true,
+
         ),
         body: TabBarView(
           children: [
@@ -131,7 +133,7 @@ class _DashboardCaixasPageState extends State<DashboardCaixasPage> {
                 : const Center(
                     child: Text("Sem dados"),
                   ),
-            MelgueiraRealTime(widget.caixa!.id!),
+            GraficosRealTime(widget.caixa!.id!)
           ],
         ),
       ),

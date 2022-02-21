@@ -38,6 +38,7 @@ class _GraficosAntigosState extends State<GraficosAntigos> {
       ],
       supportedLocales: [const Locale('pt', 'BR')],
       home:   Scaffold(
+
         appBar: AppBar(
 
 
@@ -96,6 +97,7 @@ class _GraficosAntigosState extends State<GraficosAntigos> {
           ),
           centerTitle: true,
           backgroundColor: Colors.blue,
+
         ),
         body: Builder(builder: (context) =>  MaterialApp(
             localizationsDelegates: [
